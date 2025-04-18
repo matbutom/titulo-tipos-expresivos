@@ -46,7 +46,6 @@
       pointer-events: none;
       transition: transform 0.3s ease, background-color 0.3s ease;
     }
-
     @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
@@ -100,7 +99,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // 🔥 Configuración de tu proyecto Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyB8xKvj_y33Pz7u_RRGCqRSccenQxXUNDQ",
     authDomain: "tipos-interactivos.firebaseapp.com",
@@ -142,21 +140,17 @@
 
   function colocarTitulos() {
     document.querySelectorAll('.titulo').forEach(t => t.remove());
-
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-
     tipografias.forEach((tipografia, i) => {
       const angle = (i * 45 + 22.5) * Math.PI / 180;
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
-
       const title = document.createElement('div');
       title.className = `titulo ${tipografia.clase}`;
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
       title.innerText = tipografia.nombre;
-
       document.body.appendChild(title);
     });
   }
@@ -166,25 +160,54 @@
       palabra: palabra,
       tipografia: tipografia,
       fecha: new Date()
-    })
-    .then(docRef => console.log("✔️ Enviado a Firestore con ID:", docRef.id))
-    .catch(error => console.error("❌ Error al guardar:", error));
+    }).then(docRef => {
+      console.log("✔️ Enviado a Firestore con ID:", docRef.id);
+    }).catch(error => {
+      console.error("❌ Error al guardar:", error);
+    });
+  }
+
+  function actualizarResumenEnFirestore(palabra, tipografia) {
+    const docRef = db.collection("resumenRespuestas").doc(palabra);
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        const actuales = data.tipografias || {};
+        const nuevoTotal = (actuales[tipografia] || 0) + 1;
+        docRef.update({
+          [`tipografias.${tipografia}`]: nuevoTotal
+        }).then(() => {
+          console.log(`Resumen actualizado: ${tipografia} => ${nuevoTotal}`);
+        });
+      } else {
+        docRef.set({
+          tipografias: { [tipografia]: 1 }
+        }).then(() => {
+          console.log(`Resumen creado para: ${palabra} con ${tipografia} = 1`);
+        });
+      }
+    });
   }
 
   function detectarColision() {
     const botonRect = boton.getBoundingClientRect();
     document.querySelectorAll('.titulo').forEach(titulo => {
       const tituloRect = titulo.getBoundingClientRect();
-      const dx = (botonRect.left + botonRect.width/2) - (tituloRect.left + tituloRect.width/2);
-      const dy = (botonRect.top + botonRect.height/2) - (tituloRect.top + tituloRect.height/2);
-      const distancia = Math.sqrt(dx*dx + dy*dy);
+      const dx = (botonRect.left + botonRect.width / 2) - (tituloRect.left + tituloRect.width / 2);
+      const dy = (botonRect.top + botonRect.height / 2) - (tituloRect.top + tituloRect.height / 2);
+      const distancia = Math.sqrt(dx * dx + dy * dy);
 
-      if (distancia < 100) { // zona de aceptación
+      if (distancia < 100) {
         titulo.style.transform = 'scale(1.2)';
         titulo.style.backgroundColor = '#4f46e5';
         titulo.style.color = '#fff';
 
-        enviarAFirebase(boton.innerText, titulo.innerText);
+        const palabra = boton.innerText;
+        const tipografia = titulo.innerText;
+
+        enviarAFirebase(palabra, tipografia);
+        actualizarResumenEnFirestore(palabra, tipografia);
+
         setTimeout(() => {
           titulo.style.transform = '';
           titulo.style.backgroundColor = '';
