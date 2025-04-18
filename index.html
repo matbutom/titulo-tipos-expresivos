@@ -85,7 +85,7 @@
 </div>
 
 <!-- Botón interactivo -->
-<button id="boton">Haz click</button>
+<button id="boton">Haz click aquí</button>
 
 <script>
   const boton = document.getElementById('boton');
@@ -97,20 +97,18 @@
   ];
 
   const radius = 300;
+  const tipografias = [
+    "Space Mono", "Playfair Display", "Merryweather", "DM Sans",
+    "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
+  ];
+
+  let titles = [];
 
   // Función para colocar los títulos alrededor del botón
   function colocarTitulos() {
     const botonRect = boton.getBoundingClientRect();
     const centerX = botonRect.left + botonRect.width / 2;
     const centerY = botonRect.top + botonRect.height / 2;
-
-    const existingTitles = document.querySelectorAll('.titulo');
-    existingTitles.forEach(title => title.remove());
-
-    const tipografias = [
-      "Space Mono", "Playfair Display", "Merryweather", "DM Sans",
-      "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
-    ];
 
     for (let i = 0; i < 8; i++) {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
@@ -124,10 +122,14 @@
       title.style.fontFamily = tipografias[i];
       title.innerText = tipografias[i];
       document.body.appendChild(title);
+
+      titles.push(title);  // Guardar las referencias de los títulos
     }
   }
 
-  window.onload = colocarTitulos;
+  window.onload = () => {
+    colocarTitulos();
+  }
 
   let offsetX = 0, offsetY = 0, isDragging = false;
 
@@ -142,7 +144,6 @@
     if (isDragging) {
       boton.style.left = (e.clientX - offsetX) + 'px';
       boton.style.top = (e.clientY - offsetY) + 'px';
-      colocarTitulos();
     }
   });
 
