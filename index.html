@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Dónde va cada palabra?</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: #f0f0f0;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, Helvetica, sans-serif;
+      user-select: none;
+    }
+
+    /* Botón central interactivo */
+    #boton {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 30px 60px;
+      font-size: 32px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: grab;
+      transition: box-shadow 0.2s ease;
+    }
+
+    #boton:active {
+      cursor: grabbing;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Títulos explicativos arriba a la izquierda */
+    .titulo-superior {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      text-align: left;
+      color: #4f46e5;
+    }
+
+    .titulo-superior h1 {
+      margin: 0;
+      font-size: 22px;
+      text-transform: uppercase;
+    }
+
+    .titulo-superior p {
+      margin: 4px 0 0 0;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="titulo-superior">
+  <h1>¿DÓNDE VA CADA PALABRA?</h1>
+  <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
+</div>
+
+<button id="boton">¡Muéveme!</button>
+
+<script>
+  const boton = document.getElementById('boton');
+  let offsetX = 0, offsetY = 0, isDragging = false;
+
+  boton.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - boton.offsetLeft;
+    offsetY = e.clientY - boton.offsetTop;
+    boton.style.transition = "none";
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      boton.style.left = (e.clientX - offsetX) + 'px';
+      boton.style.top = (e.clientY - offsetY) + 'px';
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      boton.style.transition = "left 0.2s ease, top 0.2s ease";
+    }
+  });
+</script>
+
+</body>
+</html>
