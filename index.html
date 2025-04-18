@@ -4,10 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Divisiones con Títulos Alrededor del Botón</title>
-  
-  <!-- Agregar fuentes desde Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Playfair+Display:wght@400;700&family=Merriweather&family=DM+Sans&family=Titillium+Web:wght@400;600&family=Outfit:wght@400;600&family=Jost:wght@400;600&family=Libre+Baskerville&display=swap" rel="stylesheet">
-  
   <style>
     body {
       margin: 0;
@@ -33,7 +29,7 @@
 
     .encabezado h1 {
       margin: 0;
-      font-size: 25px;
+      font-size: 20px;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: #4f46e5;  /* Azul como el botón */
@@ -41,7 +37,7 @@
 
     .encabezado p {
       margin: 8px 0 0;
-      font-size: 18px;
+      font-size: 14px;
       color: rgba(79, 70, 229, 0.7);  /* Azul con opacidad */
       max-width: 300px;
     }
@@ -50,6 +46,7 @@
     .titulo {
       position: absolute;
       font-size: 24px;
+      font-family: Arial, Helvetica, sans-serif;
       color: #333;
       background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
@@ -92,8 +89,16 @@
 
 <script>
   const boton = document.getElementById('boton');
+  const palabras = [
+    "administración", "funcionario", "autoridad", "representante", 
+    "institución", "empleo", "ciudadanía", "derechos humanos", 
+    "equidad", "diversidad", "orden público", "delito", 
+    "sostenibilidad", "cambio climático", "tecnología"
+  ];
+
   const radius = 300;
 
+  // Función para colocar los títulos alrededor del botón
   function colocarTitulos() {
     const botonRect = boton.getBoundingClientRect();
     const centerX = botonRect.left + botonRect.width / 2;
@@ -103,14 +108,8 @@
     existingTitles.forEach(title => title.remove());
 
     const tipografias = [
-      { name: 'Space Mono', font: 'Space Mono' },
-      { name: 'Playfair Display', font: 'Playfair Display' },
-      { name: 'Merriweather', font: 'Merriweather' },
-      { name: 'DM Sans', font: 'DM Sans' },
-      { name: 'Titillium Web', font: 'Titillium Web' },
-      { name: 'Outfit', font: 'Outfit' },
-      { name: 'Jost', font: 'Jost' },
-      { name: 'Libre Baskerville', font: 'Libre Baskerville' }
+      "Space Mono", "Playfair Display", "Merryweather", "DM Sans",
+      "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
     ];
 
     for (let i = 0; i < 8; i++) {
@@ -122,11 +121,8 @@
       title.className = 'titulo';
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
-
-      // Asignar la tipografía correspondiente
-      title.style.fontFamily = tipografias[i].font;
-      title.innerText = tipografias[i].name;  // Nombre de la tipografía
-
+      title.style.fontFamily = tipografias[i];
+      title.innerText = tipografias[i];
       document.body.appendChild(title);
     }
   }
@@ -155,6 +151,12 @@
       isDragging = false;
       boton.style.transition = "left 0.2s ease, top 0.2s ease";
     }
+  });
+
+  // Función para cambiar la palabra del botón
+  boton.addEventListener('click', () => {
+    const palabraAleatoria = palabras[Math.floor(Math.random() * palabras.length)];
+    boton.innerText = palabraAleatoria;
   });
 </script>
 
