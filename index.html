@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tipografías Interactivas</title>
+  <title>Divisiones con Títulos Alrededor del Botón</title>
   <style>
     body {
       margin: 0;
@@ -19,6 +19,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
+    /* Encabezado superior izquierdo */
     .encabezado {
       position: absolute;
       top: 30px;
@@ -41,6 +42,7 @@
       max-width: 300px;
     }
 
+    /* Títulos de las tipografías alrededor del botón */
     .titulo {
       position: absolute;
       font-size: 24px;
@@ -52,11 +54,12 @@
       transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    .resaltado {
+    .titulo.resaltado {
       transform: scale(1.2);
-      background: rgba(79, 70, 229, 0.2);
+      background: rgba(79, 70, 229, 0.15);
     }
 
+    /* Botón central interactivo */
     #boton {
       position: absolute;
       left: 50%;
@@ -69,17 +72,16 @@
       border: none;
       border-radius: 12px;
       cursor: grab;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: box-shadow 0.2s ease, left 0.3s ease, top 0.3s ease;
     }
 
     #boton:active {
       cursor: grabbing;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     }
 
-    #boton.dragging {
-      transform: translate(-50%, -50%) scale(1.1);
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-    }
+    /* Carga tipografías desde Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono&family=Playfair+Display&family=Merriweather&family=DM+Sans&family=Titillium+Web&family=Outfit&family=Jost&family=Libre+Baskerville&display=swap');
   </style>
 </head>
 <body>
@@ -89,41 +91,40 @@
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<button id="boton">Haz Click</button>
+<button id="boton">¡Haz Click!</button>
 
 <script>
-  const palabras = [
-    "Administración", "Funcionario", "Autoridad", "Representante",
-    "Institución", "Empleo", "Ciudadanía", "Derechos Humanos",
-    "Equidad", "Diversidad", "Orden Público", "Delito",
-    "Sostenibilidad", "Cambio Climático", "Tecnología"
-  ];
-
-  let palabraActual = 0;
   const boton = document.getElementById('boton');
   const radius = 300;
-  let offsetX = 0, offsetY = 0, isDragging = false;
   let titulos = [];
+  let palabras = [
+    "Administración", "Funcionario", "Autoridad", "Representante",
+    "Institución", "Empleo", "Ciudadanía", "Derechos humanos",
+    "Equidad", "Diversidad", "Orden público", "Delito",
+    "Sostenibilidad", "Cambio climático", "Tecnología"
+  ];
+  let index = 0;
+
+  const tipografias = [
+    { nombre: "Space Mono", font: "'Space Mono', monospace" },
+    { nombre: "Playfair Display", font: "'Playfair Display', serif" },
+    { nombre: "Merriweather", font: "'Merriweather', serif" },
+    { nombre: "DM Sans", font: "'DM Sans', sans-serif" },
+    { nombre: "Titillium Web", font: "'Titillium Web', sans-serif" },
+    { nombre: "Outfit", font: "'Outfit', sans-serif" },
+    { nombre: "Jost", font: "'Jost', sans-serif" },
+    { nombre: "Libre Baskerville", font: "'Libre Baskerville', serif" }
+  ];
 
   function colocarTitulos() {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const fuentes = [
-      { nombre: "Space Mono", css: "Space Mono, monospace" },
-      { nombre: "Playfair Display", css: "'Playfair Display', serif" },
-      { nombre: "Merriweather", css: "'Merriweather', serif" },
-      { nombre: "DM Sans", css: "'DM Sans', sans-serif" },
-      { nombre: "Titillium Web", css: "'Titillium Web', sans-serif" },
-      { nombre: "Outfit", css: "'Outfit', sans-serif" },
-      { nombre: "Jost", css: "'Jost', sans-serif" },
-      { nombre: "Libre Baskerville", css: "'Libre Baskerville', serif" }
-    ];
-
+    titulos.forEach(({ dom }) => dom.remove());
     titulos = [];
 
-    document.querySelectorAll('.titulo').forEach(t => t.remove());
+    const botonRect = boton.getBoundingClientRect();
+    const centerX = botonRect.left + botonRect.width / 2;
+    const centerY = botonRect.top + botonRect.height / 2;
 
-    fuentes.forEach((fuente, i) => {
+    tipografias.forEach((tipo, i) => {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
@@ -132,37 +133,45 @@
       title.className = 'titulo';
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
-      title.style.fontFamily = fuente.css;
-      title.innerText = fuente.nombre;
+      title.style.fontFamily = tipo.font;
+      title.innerText = tipo.nombre;
+
       document.body.appendChild(title);
-      titulos.push({ dom: title, x, y, nombre: fuente.nombre });
+      titulos.push({ dom: title, x, y, nombre: tipo.nombre });
     });
   }
 
   function cambiarPalabra() {
-    palabraActual = (palabraActual + 1) % palabras.length;
-    boton.innerText = palabras[palabraActual];
+    index = (index + 1) % palabras.length;
+    boton.innerText = palabras[index];
   }
 
-  boton.addEventListener('click', cambiarPalabra);
+  window.onload = () => {
+    boton.innerText = palabras[index];
+    colocarTitulos();
+  };
+
+  let offsetX = 0, offsetY = 0, isDragging = false;
 
   boton.addEventListener('mousedown', (e) => {
     isDragging = true;
     offsetX = e.clientX - boton.offsetLeft;
     offsetY = e.clientY - boton.offsetTop;
+    boton.style.transition = "none";
     boton.classList.add('dragging');
   });
 
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-      boton.style.left = (e.clientX - offsetX) + 'px';
-      boton.style.top = (e.clientY - offsetY) + 'px';
+      boton.style.left = `${e.clientX - offsetX}px`;
+      boton.style.top = `${e.clientY - offsetY}px`;
 
       titulos.forEach(({ dom, x, y }) => {
-        const dist = Math.hypot(
-          e.clientX - x,
-          e.clientY - y
-        );
+        const botonRect = boton.getBoundingClientRect();
+        const botonX = botonRect.left + botonRect.width / 2;
+        const botonY = botonRect.top + botonRect.height / 2;
+        const dist = Math.hypot(botonX - x, botonY - y);
+
         if (dist < 100) {
           dom.classList.add('resaltado');
         } else {
@@ -177,27 +186,28 @@
       isDragging = false;
       boton.classList.remove('dragging');
 
-      titulos.forEach(({ dom, x, y, nombre }) => {
+      for (let { dom, x, y, nombre } of titulos) {
         const botonRect = boton.getBoundingClientRect();
         const botonX = botonRect.left + botonRect.width / 2;
         const botonY = botonRect.top + botonRect.height / 2;
-
-        const dist = Math.hypot(
-          botonX - x,
-          botonY - y
-        );
+        const dist = Math.hypot(botonX - x, botonY - y);
 
         if (dist < 100) {
           console.log(`Asignaste "${boton.innerText}" a la tipografía "${nombre}"`);
-          cambiarPalabra(); // Cambia la palabra automáticamente si se asigna
+          cambiarPalabra();
+          boton.style.left = "50%";
+          boton.style.top = "50%";
+          boton.style.transform = "translate(-50%, -50%)";
+          break;
         }
+      }
 
-        dom.classList.remove('resaltado');
-      });
+      titulos.forEach(({ dom }) => dom.classList.remove('resaltado'));
+      boton.style.transition = "left 0.3s ease, top 0.3s ease";
     }
   });
 
-  window.onload = colocarTitulos;
+  window.addEventListener('resize', colocarTitulos);
 </script>
 
 </body>
