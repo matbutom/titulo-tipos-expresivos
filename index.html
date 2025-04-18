@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tipografías Interactivas</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Playfair+Display&family=Merriweather&family=DM+Sans&family=Titillium+Web&family=Outfit&family=Jost&family=Libre+Baskerville&display=swap" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
@@ -49,6 +53,7 @@
       background: rgba(255, 255, 255, 0.7);
       pointer-events: none;
       transition: transform 0.3s ease, background-color 0.3s ease;
+      color: #333;
     }
 
     .titulo.animacion {
@@ -121,7 +126,7 @@
       titulo.innerText = nombre;
       titulo.style.left = `${x - 85}px`;
       titulo.style.top = `${y - 20}px`;
-      titulo.style.fontFamily = nombre;
+      titulo.style.fontFamily = `'${nombre}', sans-serif`;
       document.body.appendChild(titulo);
     });
   }
