@@ -103,14 +103,14 @@
     existingTitles.forEach(title => title.remove());
 
     const tipografias = [
-      'Roboto',             // Tipografía 1
-      'Lobster',            // Tipografía 2
-      'Open Sans',          // Tipografía 3
-      'Montserrat',         // Tipografía 4
-      'Playfair Display',   // Tipografía 5
-      'Pacifico',           // Tipografía 6
-      'Oswald',             // Tipografía 7
-      'Amatic SC'           // Tipografía 8
+      { name: 'Roboto', font: 'Roboto' },
+      { name: 'Lobster', font: 'Lobster' },
+      { name: 'Open Sans', font: 'Open Sans' },
+      { name: 'Montserrat', font: 'Montserrat' },
+      { name: 'Playfair Display', font: 'Playfair Display' },
+      { name: 'Pacifico', font: 'Pacifico' },
+      { name: 'Oswald', font: 'Oswald' },
+      { name: 'Amatic SC', font: 'Amatic SC' }
     ];
 
     for (let i = 0; i < 8; i++) {
@@ -123,10 +123,10 @@
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
 
-      // Asignar una tipografía única para cada título
-      title.style.fontFamily = tipografias[i];
-      title.innerText = `Tipografía ${i + 1}`;
-      
+      // Asignar la tipografía correspondiente
+      title.style.fontFamily = tipografias[i].font;
+      title.innerText = tipografias[i].name;  // Nombre de la tipografía
+
       document.body.appendChild(title);
     }
   }
