@@ -6,7 +6,7 @@
   <title>Divisiones con Títulos Alrededor del Botón</title>
   
   <!-- Agregar fuentes desde Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&family=Open+Sans:wght@400;600&family=Montserrat:wght@400;600&family=Playfair+Display:wght@400;700&family=Pacifico&family=Oswald:wght@400;600&family=Amatic+SC:wght@400;700&family=Anton&display=swap" rel="stylesheet">
   
   <style>
     body {
@@ -103,9 +103,14 @@
     existingTitles.forEach(title => title.remove());
 
     const tipografias = [
-      'Roboto',   // Primera tipografía
-      'Lobster',  // Segunda tipografía
-      'Open Sans' // Tercera tipografía
+      'Roboto',             // Tipografía 1
+      'Lobster',            // Tipografía 2
+      'Open Sans',          // Tipografía 3
+      'Montserrat',         // Tipografía 4
+      'Playfair Display',   // Tipografía 5
+      'Pacifico',           // Tipografía 6
+      'Oswald',             // Tipografía 7
+      'Amatic SC'           // Tipografía 8
     ];
 
     for (let i = 0; i < 8; i++) {
@@ -118,8 +123,8 @@
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
 
-      // Asignar una tipografía a cada título
-      title.style.fontFamily = tipografias[i % tipografias.length];
+      // Asignar una tipografía única para cada título
+      title.style.fontFamily = tipografias[i];
       title.innerText = `Tipografía ${i + 1}`;
       
       document.body.appendChild(title);
