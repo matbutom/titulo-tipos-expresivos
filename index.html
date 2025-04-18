@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Divisiones con Títulos Alrededor del Botón</title>
+  <title>Tipografías Interactivas</title>
   <style>
     body {
       margin: 0;
@@ -44,17 +44,17 @@
     .titulo {
       position: absolute;
       font-size: 24px;
-      color: #333;
-      background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
       border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
       pointer-events: none;
-      transition: transform 0.2s ease, background 0.2s ease;
+      transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
-    .titulo.highlight {
-      transform: scale(1.2);
-      background: rgba(79, 70, 229, 0.2);
+    .titulo.animacion {
+      transform: scale(1.3);
+      background-color: #4f46e5;
+      color: white;
     }
 
     #boton {
@@ -74,7 +74,7 @@
 
     #boton:active {
       cursor: grabbing;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
     }
   </style>
 </head>
@@ -85,96 +85,116 @@
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<button id="boton">¡Muéveme!</button>
+<button id="boton">Haz click</button>
 
 <script>
+  const palabras = [
+    "Administración", "Funcionario", "Autoridad", "Representante", "Institución",
+    "Empleo", "Ciudadanía", "Derechos Humanos", "Equidad", "Diversidad",
+    "Orden Público", "Delito", "Sostenibilidad", "Cambio Climático", "Tecnología"
+  ];
+
+  let palabraIndex = 0;
+
   const boton = document.getElementById('boton');
   const radius = 300;
-  let titulos = [];
+  let offsetX = 0, offsetY = 0, isDragging = false;
 
-  const tipografias = [
-    { name: "Space Mono", font: "Space Mono" },
-    { name: "Playfair Display", font: "Playfair Display" },
-    { name: "Merryweather", font: "Merryweather" },
-    { name: "DM Sans", font: "DM Sans" },
-    { name: "Titillium Web", font: "Titillium Web" },
-    { name: "Outfit", font: "Outfit" },
-    { name: "Jost", font: "Jost" },
-    { name: "Libre Baskerville", font: "Libre Baskerville" }
+  const nombresTipografias = [
+    "Space Mono", "Playfair Display", "Merriweather", "DM Sans",
+    "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
   ];
 
   function colocarTitulos() {
-    const botonRect = boton.getBoundingClientRect();
-    const centerX = botonRect.left + botonRect.width / 2;
-    const centerY = botonRect.top + botonRect.height / 2;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
 
-    tipografias.forEach((tipografia, i) => {
+    document.querySelectorAll('.titulo').forEach(t => t.remove());
+
+    nombresTipografias.forEach((nombre, i) => {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 
-      const title = document.createElement('div');
-      title.className = 'titulo';
-      title.style.left = `${x - 85}px`;
-      title.style.top = `${y - 20}px`;
-      title.style.fontFamily = tipografia.font;
-      title.innerText = tipografia.name;
-      document.body.appendChild(title);
-      titulos.push(title);
+      const titulo = document.createElement('div');
+      titulo.className = 'titulo';
+      titulo.innerText = nombre;
+      titulo.style.left = `${x - 85}px`;
+      titulo.style.top = `${y - 20}px`;
+      titulo.style.fontFamily = nombre;
+      document.body.appendChild(titulo);
     });
   }
 
-  window.onload = colocarTitulos;
+  function actualizarPalabra() {
+    if (palabraIndex >= palabras.length) {
+      boton.textContent = "¡Lista completada!";
+      return;
+    }
+    boton.textContent = palabras[palabraIndex];
+  }
 
-  let offsetX = 0, offsetY = 0, isDragging = false;
+  function detectarColision() {
+    const botonRect = boton.getBoundingClientRect();
+    const titulos = document.querySelectorAll('.titulo');
 
-  boton.addEventListener('mousedown', (e) => {
+    titulos.forEach(titulo => {
+      const tRect = titulo.getBoundingClientRect();
+      const dentro = !(
+        botonRect.right < tRect.left ||
+        botonRect.left > tRect.right ||
+        botonRect.bottom < tRect.top ||
+        botonRect.top > tRect.bottom
+      );
+
+      if (dentro) {
+        titulo.classList.add('animacion');
+
+        setTimeout(() => {
+          titulo.classList.remove('animacion');
+        }, 500);
+
+        palabraIndex++;
+        actualizarPalabra();
+        resetBotonAlCentro();
+      }
+    });
+  }
+
+  function resetBotonAlCentro() {
+    boton.style.transition = "left 0.3s ease, top 0.3s ease";
+    boton.style.left = "50%";
+    boton.style.top = "50%";
+    boton.style.transform = "translate(-50%, -50%)";
+  }
+
+  window.onload = () => {
+    colocarTitulos();
+    actualizarPalabra();
+  };
+
+  boton.addEventListener('mousedown', e => {
     isDragging = true;
     offsetX = e.clientX - boton.offsetLeft;
     offsetY = e.clientY - boton.offsetTop;
     boton.style.transition = "none";
   });
 
-  document.addEventListener('mousemove', (e) => {
+  document.addEventListener('mousemove', e => {
     if (isDragging) {
-      const newX = e.clientX - offsetX;
-      const newY = e.clientY - offsetY;
-      boton.style.left = newX + 'px';
-      boton.style.top = newY + 'px';
-
-      // Detectar cercanía a tipografías
-      titulos.forEach(titulo => {
-        const tituloRect = titulo.getBoundingClientRect();
-        const botonRect = boton.getBoundingClientRect();
-
-        const tituloX = tituloRect.left + tituloRect.width / 2;
-        const tituloY = tituloRect.top + tituloRect.height / 2;
-        const botonX = botonRect.left + botonRect.width / 2;
-        const botonY = botonRect.top + botonRect.height / 2;
-
-        const distancia = Math.hypot(tituloX - botonX, tituloY - botonY);
-
-        if (distancia < 80) {
-          titulo.classList.add('highlight');
-        } else {
-          titulo.classList.remove('highlight');
-        }
-      });
+      boton.style.left = `${e.clientX - offsetX}px`;
+      boton.style.top = `${e.clientY - offsetY}px`;
     }
   });
 
   document.addEventListener('mouseup', () => {
     if (isDragging) {
       isDragging = false;
-      boton.style.transition = "left 0.3s ease, top 0.3s ease";
-      boton.style.left = '50%';
-      boton.style.top = '50%';
-      boton.style.transform = 'translate(-50%, -50%)';
-
-      // Limpiar animaciones
-      titulos.forEach(titulo => titulo.classList.remove('highlight'));
+      detectarColision();
     }
   });
+
+  window.addEventListener('resize', colocarTitulos);
 </script>
 
 </body>
