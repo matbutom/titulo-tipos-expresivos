@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Divisiones con Títulos Alrededor del Botón</title>
+  
+  <!-- Agregar fuentes desde Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  
   <style>
     body {
       margin: 0;
@@ -46,7 +50,6 @@
     .titulo {
       position: absolute;
       font-size: 24px;
-      font-family: Arial, Helvetica, sans-serif;
       color: #333;
       background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
@@ -99,6 +102,12 @@
     const existingTitles = document.querySelectorAll('.titulo');
     existingTitles.forEach(title => title.remove());
 
+    const tipografias = [
+      'Roboto',   // Primera tipografía
+      'Lobster',  // Segunda tipografía
+      'Open Sans' // Tercera tipografía
+    ];
+
     for (let i = 0; i < 8; i++) {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
@@ -108,7 +117,11 @@
       title.className = 'titulo';
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
+
+      // Asignar una tipografía a cada título
+      title.style.fontFamily = tipografias[i % tipografias.length];
       title.innerText = `Tipografía ${i + 1}`;
+      
       document.body.appendChild(title);
     }
   }
