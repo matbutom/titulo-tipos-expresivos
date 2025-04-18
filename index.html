@@ -5,90 +5,196 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interactividad de Tipografías</title>
   <style>
-    /* Tus estilos aquí... */
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: #f0f0f0;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* Encabezado superior izquierdo */
+    .encabezado {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      text-align: left;
+    }
+
+    .encabezado h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #4f46e5;  /* Azul como el botón */
+    }
+
+    .encabezado p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: rgba(79, 70, 229, 0.7);  /* Azul con opacidad */
+      max-width: 300px;
+    }
+
+    /* Títulos de las tipografías alrededor del botón */
+    .titulo {
+      position: absolute;
+      font-size: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #333;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 6px 12px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    /* Botón central interactivo */
+    #boton {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 30px 60px;
+      font-size: 32px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: grab;
+      transition: box-shadow 0.2s ease;
+    }
+
+    #boton:active {
+      cursor: grabbing;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
 <body>
 
-  <div class="encabezado">
-    <h1>¿DÓNDE VA CADA PALABRA?</h1>
-    <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
-  </div>
+<!-- Encabezado superior izquierdo -->
+<div class="encabezado">
+  <h1>¿DÓNDE VA CADA PALABRA?</h1>
+  <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
+</div>
 
-  <button id="boton">¡Haz click y cambia la palabra!</button>
+<!-- Botón interactivo -->
+<button id="boton">¡Haz click y cambia la palabra!</button>
 
-  <script>
-    // Lista de palabras
-    const palabras = [
-      "Administración",
-      "Funcionario",
-      "Autoridad",
-      "Representante",
-      "Institución",
-      "Empleo",
-      "Ciudadanía",
-      "Derechos Humanos",
-      "Equidad",
-      "Diversidad",
-      "Orden Público",
-      "Delito",
-      "Sostenibilidad",
-      "Cambio Climático",
-      "Tecnología"
+<script>
+  // Lista de palabras
+  const palabras = [
+    "Administración",
+    "Funcionario",
+    "Autoridad",
+    "Representante",
+    "Institución",
+    "Empleo",
+    "Ciudadanía",
+    "Derechos Humanos",
+    "Equidad",
+    "Diversidad",
+    "Orden Público",
+    "Delito",
+    "Sostenibilidad",
+    "Cambio Climático",
+    "Tecnología"
+  ];
+
+  let palabraActual = 0;
+  const boton = document.getElementById('boton');
+  const radius = 300;
+
+  // Cambiar la palabra del botón
+  function cambiarPalabra() {
+    boton.innerText = palabras[palabraActual];
+    palabraActual = (palabraActual + 1) % palabras.length;
+  }
+
+  boton.addEventListener("click", cambiarPalabra);
+
+  // Enviar datos a Google Sheets
+  function enviarDatos(palabra, tipografia) {
+    fetch("https://script.google.com/macros/s/AKfycbzRKiKAMU6g3ZOvTtbvb8TPcnCpEOeLAU__Sf_RO6e-LTLe_8MPneeDCiOsXR8Kpdpt_Q/exec", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        palabra: palabra,
+        tipografia: tipografia,
+        fecha: new Date().toLocaleString()
+      })
+    })
+    .then(response => response.text())
+    .then(data => console.log('Éxito:', data))
+    .catch((error) => console.error('Error:', error));
+  }
+
+  // Títulos alrededor del botón
+  function colocarTitulos() {
+    const botonRect = boton.getBoundingClientRect();
+    const centerX = botonRect.left + botonRect.width / 2;
+    const centerY = botonRect.top + botonRect.height / 2;
+
+    const titulos = [
+      "Space Mono", "Playfair Display", "Merryweather", "DM Sans",
+      "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
     ];
 
-    let palabraActual = 0;
-    const boton = document.getElementById('boton');
-    const radius = 300;
+    const existingTitles = document.querySelectorAll('.titulo');
+    existingTitles.forEach(title => title.remove());
 
-    // Cambiar la palabra del botón
-    function cambiarPalabra() {
-      boton.innerText = palabras[palabraActual];
-      palabraActual = (palabraActual + 1) % palabras.length;
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * 45 + 22.5) * (Math.PI / 180);
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      const title = document.createElement('div');
+      title.className = 'titulo';
+      title.style.left = `${x - 85}px`;
+      title.style.top = `${y - 20}px`;
+      title.innerText = titulos[i];
+      title.style.fontFamily = titulos[i];
+      document.body.appendChild(title);
     }
+  }
 
-    boton.addEventListener("click", cambiarPalabra);
+  window.onload = colocarTitulos;
 
-    // Enviar datos a Google Sheets
-    function enviarDatos(palabra, tipografia) {
-      fetch("https://script.google.com/macros/s/AKfycbzbPh1d-XxvKBt0HuSmRyVUXt9C_b_shh_mYep0e_4B1MAh1uGyCRU1SkLPPf1d-npg_w/execs", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          palabra: palabra,
-          tipografia: tipografia,
-          fecha: new Date().toLocaleString()
-        })
-      })
-      .then(response => response.text())
-      .then(data => console.log('Éxito:', data))
-      .catch((error) => console.error('Error:', error));
+  let offsetX = 0, offsetY = 0, isDragging = false;
+
+  boton.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - boton.offsetLeft;
+    offsetY = e.clientY - boton.offsetTop;
+    boton.style.transition = "none";
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      boton.style.left = (e.clientX - offsetX) + 'px';
+      boton.style.top = (e.clientY - offsetY) + 'px';
+      colocarTitulos();
     }
+  });
 
-    // Lógica de arrastrar y soltar (función básica)
-    let offsetX = 0, offsetY = 0, isDragging = false;
-
-    boton.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      offsetX = e.clientX - boton.offsetLeft;
-      offsetY = e.clientY - boton.offsetTop;
-      boton.style.transition = "none";
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        boton.style.left = (e.clientX - offsetX) + 'px';
-        boton.style.top = (e.clientY - offsetY) + 'px';
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      if (isDragging) {
-        isDragging = false;
-        boton.style.transition = "left 0.2s ease, top 0.2s ease";
-      }
-    });
-  </script>
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      boton.style.transition = "left 0.2s ease, top 0.2s ease";
+      // Enviar la palabra y la tipografía a Google Sheets cuando el botón se suelta
+      const tipografia = document.querySelector('.titulo').innerText; // Asume que la tipografía sobre la que cae el botón es la primera
+      enviarDatos(boton.innerText, tipografia);
+      // Reiniciar el botón a la posición central y cambiar la palabra
+      cambiarPalabra();
+    }
+  });
+</script>
 
 </body>
 </html>
