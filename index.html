@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tipografías Interactivas</title>
+  <title>¿DÓNDE VA CADA PALABRA?</title>
   <style>
     body {
       margin: 0;
@@ -44,17 +44,12 @@
     .titulo {
       position: absolute;
       font-size: 24px;
-      color: #333;
-      background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
       border-radius: 8px;
       pointer-events: none;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .titulo:hover {
-      transform: scale(1.1);
-      background: rgba(79, 70, 229, 0.2);
+      background: rgba(255, 255, 255, 0.7);
+      color: #333;
+      transform: translate(-50%, -50%);
     }
 
     #boton {
@@ -69,25 +64,25 @@
       border: none;
       border-radius: 12px;
       cursor: grab;
-      transition: box-shadow 0.2s ease, transform 0.3s ease;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
 
     #boton:active {
       cursor: grabbing;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
       transform: scale(1.1);
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
     }
 
     @import url('https://fonts.googleapis.com/css2?family=Space+Mono&family=Playfair+Display&family=Merriweather&family=DM+Sans&family=Titillium+Web&family=Outfit&family=Jost&family=Libre+Baskerville&display=swap');
 
-    .titulo:nth-child(1) { font-family: 'Space Mono', monospace; }
-    .titulo:nth-child(2) { font-family: 'Playfair Display', serif; }
-    .titulo:nth-child(3) { font-family: 'Merriweather', serif; }
-    .titulo:nth-child(4) { font-family: 'DM Sans', sans-serif; }
-    .titulo:nth-child(5) { font-family: 'Titillium Web', sans-serif; }
-    .titulo:nth-child(6) { font-family: 'Outfit', sans-serif; }
-    .titulo:nth-child(7) { font-family: 'Jost', sans-serif; }
-    .titulo:nth-child(8) { font-family: 'Libre Baskerville', serif; }
+    .SpaceMono { font-family: 'Space Mono', monospace; }
+    .PlayfairDisplay { font-family: 'Playfair Display', serif; }
+    .Merriweather { font-family: 'Merriweather', serif; }
+    .DMSans { font-family: 'DM Sans', sans-serif; }
+    .TitilliumWeb { font-family: 'Titillium Web', sans-serif; }
+    .Outfit { font-family: 'Outfit', sans-serif; }
+    .Jost { font-family: 'Jost', sans-serif; }
+    .LibreBaskerville { font-family: 'Libre Baskerville', serif; }
   </style>
 </head>
 <body>
@@ -97,65 +92,83 @@
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<button id="boton">Haz click</button>
+<button id="boton">Haz Click</button>
 
 <script>
-  const boton = document.getElementById('boton');
   const palabras = [
     "Administración", "Funcionario", "Autoridad", "Representante",
-    "Institución", "Empleo", "Ciudadanía", "Derechos humanos",
-    "Equidad", "Diversidad", "Orden público", "Delito",
-    "Sostenibilidad", "Cambio climático", "Tecnología"
+    "Institución", "Empleo", "Ciudadanía", "Derechos Humanos",
+    "Equidad", "Diversidad", "Orden Público", "Delito",
+    "Sostenibilidad", "Cambio Climático", "Tecnología"
   ];
-
-  let palabraActual = "";
 
   const tipografias = [
-    "Space Mono", "Playfair Display", "Merriweather", "DM Sans",
-    "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
+    { nombre: "Space Mono", clase: "SpaceMono" },
+    { nombre: "Playfair Display", clase: "PlayfairDisplay" },
+    { nombre: "Merriweather", clase: "Merriweather" },
+    { nombre: "DM Sans", clase: "DMSans" },
+    { nombre: "Titillium Web", clase: "TitilliumWeb" },
+    { nombre: "Outfit", clase: "Outfit" },
+    { nombre: "Jost", clase: "Jost" },
+    { nombre: "Libre Baskerville", clase: "LibreBaskerville" }
   ];
 
+  const boton = document.getElementById('boton');
   const radius = 300;
-
-  function nuevaPalabra() {
-    palabraActual = palabras[Math.floor(Math.random() * palabras.length)];
-    boton.textContent = palabraActual;
-  }
+  let currentWordIndex = 0;
+  let isDragging = false, offsetX = 0, offsetY = 0;
 
   function colocarTitulos() {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    document.querySelectorAll('.titulo').forEach(el => el.remove());
+    document.querySelectorAll('.titulo').forEach(e => e.remove());
 
-    tipografias.forEach((name, i) => {
+    tipografias.forEach((font, i) => {
       const angle = (i * 45 + 22.5) * Math.PI / 180;
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 
-      const titulo = document.createElement('div');
-      titulo.className = 'titulo';
-      titulo.innerText = name;
-      titulo.style.left = `${x - 85}px`;
-      titulo.style.top = `${y - 20}px`;
-      document.body.appendChild(titulo);
+      const title = document.createElement('div');
+      title.className = `titulo ${font.clase}`;
+      title.style.left = `${x}px`;
+      title.style.top = `${y}px`;
+      title.innerText = font.nombre;
+      document.body.appendChild(title);
     });
   }
 
-  function enviarAsignacion(palabra, tipografia) {
-    fetch('https://script.google.com/a/macros/mail.udp.cl/s/AKfycbw2N7tmKIy4U2u6Ywh3PV0VdidcfxP68NH5nePpaXkf80k-dL3725hV7lGcFQ0RFilB/exec', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        palabra: palabra,
-        tipografia: tipografia,
-        usuario: "MatiasB"
-      })
-    }).then(r => console.log(`Enviado: ${palabra} -> ${tipografia}`))
-      .catch(err => console.error("Error enviando:", err));
+  function cambiarPalabra() {
+    currentWordIndex = Math.floor(Math.random() * palabras.length);
+    boton.innerText = palabras[currentWordIndex];
   }
 
-  let offsetX = 0, offsetY = 0, isDragging = false;
+  function guardarSeleccion(tipografia) {
+    const palabra = palabras[currentWordIndex];
+    const usuario = "MatiasB";
+
+    fetch('https://script.google.com/macros/s/AKfycbxJo_f91aJSwHnNOcX1ZYVC4bo3A2czOwpQz6iPz-z1MEPzH63qhU65NRMLfuep1jQtHw/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ palabra, tipografia, usuario })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("✅ Enviado a Google Sheets:", data);
+      boton.innerText = "¡Guardado!";
+      setTimeout(() => {
+        resetBoton();
+        cambiarPalabra();
+      }, 1000);
+    })
+    .catch(err => console.error("❌ Error enviando:", err));
+  }
+
+  function resetBoton() {
+    boton.style.left = "50%";
+    boton.style.top = "50%";
+    boton.style.transition = "left 0.2s ease, top 0.2s ease";
+  }
 
   boton.addEventListener('mousedown', (e) => {
     isDragging = true;
@@ -166,44 +179,37 @@
 
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-      boton.style.left = (e.clientX - offsetX) + 'px';
-      boton.style.top = (e.clientY - offsetY) + 'px';
+      boton.style.left = `${e.clientX - offsetX}px`;
+      boton.style.top = `${e.clientY - offsetY}px`;
     }
   });
 
   document.addEventListener('mouseup', () => {
-    if (isDragging) {
-      isDragging = false;
-      boton.style.transition = "left 0.2s ease, top 0.2s ease";
+    if (!isDragging) return;
+    isDragging = false;
+    boton.style.transition = "left 0.2s ease, top 0.2s ease";
 
-      // Chequear colisión
-      document.querySelectorAll('.titulo').forEach(titulo => {
-        const rect1 = boton.getBoundingClientRect();
-        const rect2 = titulo.getBoundingClientRect();
+    const bRect = boton.getBoundingClientRect();
+    document.querySelectorAll('.titulo').forEach(title => {
+      const tRect = title.getBoundingClientRect();
+      const distancia = Math.hypot(
+        bRect.left + bRect.width / 2 - (tRect.left + tRect.width / 2),
+        bRect.top + bRect.height / 2 - (tRect.top + tRect.height / 2)
+      );
 
-        const overlap = !(rect1.right < rect2.left ||
-                          rect1.left > rect2.right ||
-                          rect1.bottom < rect2.top ||
-                          rect1.top > rect2.bottom);
-
-        if (overlap) {
-          enviarAsignacion(palabraActual, titulo.innerText);
-          setTimeout(() => {
-            // Vuelve al centro y carga nueva palabra
-            boton.style.left = '50%';
-            boton.style.top = '50%';
-            boton.style.transform = 'translate(-50%, -50%)';
-            nuevaPalabra();
-          }, 300);
-        }
-      });
-    }
+      if (distancia < 100) {
+        guardarSeleccion(title.innerText);
+      }
+    });
   });
 
+  boton.addEventListener('click', cambiarPalabra);
   window.onload = () => {
     colocarTitulos();
-    nuevaPalabra();
+    cambiarPalabra();
   };
+
+  window.onresize = colocarTitulos;
 </script>
 
 </body>
