@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Divisiones con Títulos Alrededor del Botón</title>
+  <title>Tipografías Interactivas</title>
   <style>
     body {
       margin: 0;
@@ -19,7 +19,6 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* Encabezado superior izquierdo */
     .encabezado {
       position: absolute;
       top: 30px;
@@ -32,29 +31,32 @@
       font-size: 20px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      color: #4f46e5;  /* Azul como el botón */
+      color: #4f46e5;
     }
 
     .encabezado p {
       margin: 8px 0 0;
       font-size: 14px;
-      color: rgba(79, 70, 229, 0.7);  /* Azul con opacidad */
+      color: rgba(79, 70, 229, 0.7);
       max-width: 300px;
     }
 
-    /* Títulos de las tipografías alrededor del botón */
     .titulo {
       position: absolute;
       font-size: 24px;
-      font-family: Arial, Helvetica, sans-serif;
       color: #333;
       background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
       border-radius: 8px;
       pointer-events: none;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    /* Botón central interactivo */
+    .resaltado {
+      transform: scale(1.2);
+      background: rgba(79, 70, 229, 0.2);
+    }
+
     #boton {
       position: absolute;
       left: 50%;
@@ -67,51 +69,61 @@
       border: none;
       border-radius: 12px;
       cursor: grab;
-      transition: box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     #boton:active {
       cursor: grabbing;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #boton.dragging {
+      transform: translate(-50%, -50%) scale(1.1);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
 <body>
 
-<!-- Encabezado superior izquierdo -->
 <div class="encabezado">
   <h1>¿DÓNDE VA CADA PALABRA?</h1>
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<!-- Botón interactivo -->
-<button id="boton">Haz click aquí</button>
+<button id="boton">Haz Click</button>
 
 <script>
-  const boton = document.getElementById('boton');
   const palabras = [
-    "Administración", "Funcionario", "Autoridad", "Representante", 
-    "Institución", "Empleo", "Ciudadanía", "Derechos humanos", 
-    "Equidad", "Diversidad", "Orden público", "Delito", 
-    "Sostenibilidad", "Cambio climático", "Tecnología"
+    "Administración", "Funcionario", "Autoridad", "Representante",
+    "Institución", "Empleo", "Ciudadanía", "Derechos Humanos",
+    "Equidad", "Diversidad", "Orden Público", "Delito",
+    "Sostenibilidad", "Cambio Climático", "Tecnología"
   ];
 
+  let palabraActual = 0;
+  const boton = document.getElementById('boton');
   const radius = 300;
-  const tipografias = [
-    "Space Mono", "Playfair Display", "Merryweather", "DM Sans",
-    "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
-  ];
+  let offsetX = 0, offsetY = 0, isDragging = false;
+  let titulos = [];
 
-  let titles = [];
-  let dataRecopilada = [];
-
-  // Función para colocar los títulos alrededor del botón
   function colocarTitulos() {
-    const botonRect = boton.getBoundingClientRect();
-    const centerX = botonRect.left + botonRect.width / 2;
-    const centerY = botonRect.top + botonRect.height / 2;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const fuentes = [
+      { nombre: "Space Mono", css: "Space Mono, monospace" },
+      { nombre: "Playfair Display", css: "'Playfair Display', serif" },
+      { nombre: "Merriweather", css: "'Merriweather', serif" },
+      { nombre: "DM Sans", css: "'DM Sans', sans-serif" },
+      { nombre: "Titillium Web", css: "'Titillium Web', sans-serif" },
+      { nombre: "Outfit", css: "'Outfit', sans-serif" },
+      { nombre: "Jost", css: "'Jost', sans-serif" },
+      { nombre: "Libre Baskerville", css: "'Libre Baskerville', serif" }
+    ];
 
-    for (let i = 0; i < 8; i++) {
+    titulos = [];
+
+    document.querySelectorAll('.titulo').forEach(t => t.remove());
+
+    fuentes.forEach((fuente, i) => {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
@@ -120,80 +132,72 @@
       title.className = 'titulo';
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
-      title.style.fontFamily = tipografias[i];
-      title.innerText = tipografias[i];
+      title.style.fontFamily = fuente.css;
+      title.innerText = fuente.nombre;
       document.body.appendChild(title);
-
-      titles.push(title);  // Guardar las referencias de los títulos
-    }
+      titulos.push({ dom: title, x, y, nombre: fuente.nombre });
+    });
   }
 
-  window.onload = () => {
-    colocarTitulos();
+  function cambiarPalabra() {
+    palabraActual = (palabraActual + 1) % palabras.length;
+    boton.innerText = palabras[palabraActual];
   }
 
-  let offsetX = 0, offsetY = 0, isDragging = false;
+  boton.addEventListener('click', cambiarPalabra);
 
   boton.addEventListener('mousedown', (e) => {
     isDragging = true;
     offsetX = e.clientX - boton.offsetLeft;
     offsetY = e.clientY - boton.offsetTop;
-    boton.style.transition = "none";
+    boton.classList.add('dragging');
   });
 
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
       boton.style.left = (e.clientX - offsetX) + 'px';
       boton.style.top = (e.clientY - offsetY) + 'px';
+
+      titulos.forEach(({ dom, x, y }) => {
+        const dist = Math.hypot(
+          e.clientX - x,
+          e.clientY - y
+        );
+        if (dist < 100) {
+          dom.classList.add('resaltado');
+        } else {
+          dom.classList.remove('resaltado');
+        }
+      });
     }
   });
 
   document.addEventListener('mouseup', () => {
     if (isDragging) {
       isDragging = false;
-      boton.style.transition = "left 0.2s ease, top 0.2s ease";
-      
-      // Verificamos si el botón está cerca de alguna tipografía
-      titles.forEach((title, index) => {
-        const titleRect = title.getBoundingClientRect();
+      boton.classList.remove('dragging');
+
+      titulos.forEach(({ dom, x, y, nombre }) => {
         const botonRect = boton.getBoundingClientRect();
+        const botonX = botonRect.left + botonRect.width / 2;
+        const botonY = botonRect.top + botonRect.height / 2;
 
-        // Comprobamos si el botón está lo suficientemente cerca de la tipografía
-        if (botonRect.left < titleRect.left + titleRect.width &&
-            botonRect.left + botonRect.width > titleRect.left &&
-            botonRect.top < titleRect.top + titleRect.height &&
-            botonRect.top + botonRect.height > titleRect.top) {
-          
-          // Guardamos los datos
-          dataRecopilada.push({
-            palabra: boton.innerText,
-            tipografia: tipografias[index]
-          });
+        const dist = Math.hypot(
+          botonX - x,
+          botonY - y
+        );
 
-          console.log("Datos recopilados:", dataRecopilada);
-          
-          // Descargamos un archivo con los datos
-          generarArchivo();
+        if (dist < 100) {
+          console.log(`Asignaste "${boton.innerText}" a la tipografía "${nombre}"`);
+          cambiarPalabra(); // Cambia la palabra automáticamente si se asigna
         }
+
+        dom.classList.remove('resaltado');
       });
     }
   });
 
-  // Función para cambiar la palabra del botón
-  boton.addEventListener('click', () => {
-    const palabraAleatoria = palabras[Math.floor(Math.random() * palabras.length)];
-    boton.innerText = palabraAleatoria;
-  });
-
-  // Función para generar un archivo de texto con los datos
-  function generarArchivo() {
-    const contenido = dataRecopilada.map(item => `Palabra: ${item.palabra}, Tipografía: ${item.tipografia}`).join('\n');
-    const blob = new Blob([contenido], { type: 'text/plain' });
-    const enlace = document.createElement('a');
-    enlace.href = URL.createObjectURL(blob);
-    enlace.download = 'datos_recopilados.txt';
-    enlace.click();
-  }
+  window.onload = colocarTitulos;
 </script>
 
 </body>
