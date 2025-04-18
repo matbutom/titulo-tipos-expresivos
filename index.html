@@ -3,34 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arrastra la Palabra</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Playfair+Display&family=Merriweather&family=DM+Sans&family=Titillium+Web&family=Outfit&family=Jost&family=Libre+Baskerville&display=swap" rel="stylesheet">
+  <title>¿DÓNDE VA CADA PALABRA?</title>
   <style>
     body {
       margin: 0;
       height: 100vh;
       width: 100vw;
-      background: #f0f0f0;
+      background-color: #f0f0f0;
       overflow: hidden;
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: Arial, sans-serif;
       user-select: none;
-      position: relative;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     .encabezado {
       position: absolute;
       top: 30px;
       left: 30px;
+      text-align: left;
     }
 
     .encabezado h1 {
       margin: 0;
       font-size: 20px;
-      color: #4f46e5;
+      letter-spacing: 1px;
       text-transform: uppercase;
+      color: #4f46e5;
     }
 
     .encabezado p {
@@ -43,19 +44,31 @@
     .titulo {
       position: absolute;
       font-size: 24px;
+      background: rgba(255, 255, 255, 0.8);
       padding: 6px 12px;
       border-radius: 8px;
       pointer-events: none;
-      background: rgba(255, 255, 255, 0.7);
-      color: #333;
-      transition: transform 0.3s ease, background 0.3s ease;
+      transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
-    .titulo.animacion {
-      transform: scale(1.3);
-      background: #4f46e5;
-      color: white;
-    }
+    /* Tipografías personalizadas */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
+
+    .font-SpaceMono { font-family: 'Space Mono', monospace; }
+    .font-Playfair { font-family: 'Playfair Display', serif; }
+    .font-Merriweather { font-family: 'Merriweather', serif; }
+    .font-DMSans { font-family: 'DM Sans', sans-serif; }
+    .font-Titillium { font-family: 'Titillium Web', sans-serif; }
+    .font-Outfit { font-family: 'Outfit', sans-serif; }
+    .font-Jost { font-family: 'Jost', sans-serif; }
+    .font-LibreBaskerville { font-family: 'Libre Baskerville', serif; }
 
     #boton {
       position: absolute;
@@ -64,17 +77,18 @@
       transform: translate(-50%, -50%);
       padding: 30px 60px;
       font-size: 32px;
-      background: #4f46e5;
+      background-color: #4f46e5;
       color: white;
       border: none;
       border-radius: 12px;
       cursor: grab;
-      transition: box-shadow 0.2s ease;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
 
     #boton:active {
       cursor: grabbing;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      transform: translate(-50%, -50%) scale(1.05);
     }
   </style>
 </head>
@@ -85,126 +99,125 @@
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<button id="boton">¡Haz Click!</button>
+<button id="boton">Haz click</button>
 
 <script>
-const palabras = [
-  "Administración", "Funcionario", "Autoridad", "Representante",
-  "Institución", "Empleo", "Ciudadanía", "Derechos Humanos",
-  "Equidad", "Diversidad", "Orden Público", "Delito",
-  "Sostenibilidad", "Cambio Climático", "Tecnología"
-];
+  const palabras = [
+    "Administración", "Funcionario", "Autoridad", "Representante", "Institución",
+    "Empleo", "Ciudadanía", "Derechos Humanos", "Equidad", "Diversidad",
+    "Orden Público", "Delito", "Sostenibilidad", "Cambio Climático", "Tecnología"
+  ];
 
-let palabraIndex = 0;
-const boton = document.getElementById('boton');
-const radius = 300;
-let offsetX = 0, offsetY = 0, isDragging = false;
+  const tipografias = [
+    { nombre: "Space Mono", clase: "font-SpaceMono" },
+    { nombre: "Playfair Display", clase: "font-Playfair" },
+    { nombre: "Merriweather", clase: "font-Merriweather" },
+    { nombre: "DM Sans", clase: "font-DMSans" },
+    { nombre: "Titillium Web", clase: "font-Titillium" },
+    { nombre: "Outfit", clase: "font-Outfit" },
+    { nombre: "Jost", clase: "font-Jost" },
+    { nombre: "Libre Baskerville", clase: "font-LibreBaskerville" }
+  ];
 
-const nombresTipografias = [
-  "Space Mono", "Playfair Display", "Merriweather", "DM Sans",
-  "Titillium Web", "Outfit", "Jost", "Libre Baskerville"
-];
+  let index = 0;
+  const boton = document.getElementById('boton');
+  const radius = 300;
+  let offsetX = 0, offsetY = 0, isDragging = false;
 
-function colocarTitulos() {
-  const centerX = window.innerWidth / 2;
-  const centerY = window.innerHeight / 2;
-
-  document.querySelectorAll('.titulo').forEach(t => t.remove());
-
-  nombresTipografias.forEach((nombre, i) => {
-    const angle = (i * 45 + 22.5) * (Math.PI / 180);
-    const x = centerX + radius * Math.cos(angle);
-    const y = centerY + radius * Math.sin(angle);
-
-    const titulo = document.createElement('div');
-    titulo.className = 'titulo';
-    titulo.innerText = nombre;
-    titulo.style.left = `${x - 85}px`;
-    titulo.style.top = `${y - 20}px`;
-    titulo.style.fontFamily = `'${nombre}', sans-serif`;
-    document.body.appendChild(titulo);
-  });
-}
-
-function actualizarPalabra() {
-  if (palabraIndex >= palabras.length) {
-    boton.textContent = "¡Lista completada!";
-    return;
+  function nuevaPalabra() {
+    boton.innerText = palabras[index % palabras.length];
+    index++;
   }
-  boton.textContent = palabras[palabraIndex];
-}
 
-function enviarAGoogleSheets(palabra, tipografia) {
-  fetch("https://script.google.com/macros/s/AKfycbxJo_f91aJSwHnNOcX1ZYVC4bo3A2czOwpQz6iPz-z1MEPzH63qhU65NRMLfuep1jQtHw/exec", {
-    method: 'POST',
-    body: JSON.stringify({ palabra, tipografia }),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(response => response.text())
-  .then(result => console.log("Guardado en Sheets:", result))
-  .catch(error => console.error("Error:", error));
-}
+  function colocarTitulos() {
+    document.querySelectorAll('.titulo').forEach(t => t.remove());
 
-function detectarColision() {
-  const botonRect = boton.getBoundingClientRect();
-  const titulos = document.querySelectorAll('.titulo');
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
 
-  titulos.forEach(titulo => {
-    const tRect = titulo.getBoundingClientRect();
-    const dentro = !(
-      botonRect.right < tRect.left ||
-      botonRect.left > tRect.right ||
-      botonRect.bottom < tRect.top ||
-      botonRect.top > tRect.bottom
-    );
+    tipografias.forEach((tipografia, i) => {
+      const angle = (i * 45 + 22.5) * Math.PI / 180;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
 
-    if (dentro) {
-      titulo.classList.add('animacion');
+      const title = document.createElement('div');
+      title.className = `titulo ${tipografia.clase}`;
+      title.style.left = `${x - 85}px`;
+      title.style.top = `${y - 20}px`;
+      title.innerText = tipografia.nombre;
 
-      setTimeout(() => titulo.classList.remove('animacion'), 500);
+      document.body.appendChild(title);
+    });
+  }
 
-      enviarAGoogleSheets(palabras[palabraIndex], titulo.innerText);
-      palabraIndex++;
-      actualizarPalabra();
-      resetBotonAlCentro();
+  function enviarAGoogleSheets(palabra, tipografia) {
+    fetch("https://script.google.com/macros/s/AKfycbxJo_f91aJSwHnNOcX1ZYVC4bo3A2czOwpQz6iPz-z1MEPzH63qhU65NRMLfuep1jQtHw/exec", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ palabra, tipografia, fecha: new Date().toLocaleString() })
+    })
+    .then(r => r.text())
+    .then(res => console.log("✔️ Enviado:", res))
+    .catch(err => console.error("❌ Error al enviar:", err));
+  }
+
+  function detectarColision() {
+    const botonRect = boton.getBoundingClientRect();
+    document.querySelectorAll('.titulo').forEach(titulo => {
+      const tituloRect = titulo.getBoundingClientRect();
+      const dx = (botonRect.left + botonRect.width/2) - (tituloRect.left + tituloRect.width/2);
+      const dy = (botonRect.top + botonRect.height/2) - (tituloRect.top + tituloRect.height/2);
+      const distancia = Math.sqrt(dx*dx + dy*dy);
+
+      if (distancia < 100) { // zona de aceptación
+        titulo.style.transform = 'scale(1.2)';
+        titulo.style.backgroundColor = '#4f46e5';
+        titulo.style.color = '#fff';
+
+        enviarAGoogleSheets(boton.innerText, titulo.innerText);
+        setTimeout(() => {
+          titulo.style.transform = '';
+          titulo.style.backgroundColor = '';
+          titulo.style.color = '';
+          resetBoton();
+          nuevaPalabra();
+        }, 500);
+      }
+    });
+  }
+
+  function resetBoton() {
+    boton.style.left = '50%';
+    boton.style.top = '50%';
+    boton.style.transform = 'translate(-50%, -50%)';
+  }
+
+  boton.addEventListener('mousedown', e => {
+    isDragging = true;
+    offsetX = e.clientX - boton.offsetLeft;
+    offsetY = e.clientY - boton.offsetTop;
+    boton.style.transition = "none";
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (isDragging) {
+      boton.style.left = `${e.clientX - offsetX}px`;
+      boton.style.top = `${e.clientY - offsetY}px`;
     }
   });
-}
 
-function resetBotonAlCentro() {
-  boton.style.transition = "left 0.3s ease, top 0.3s ease";
-  boton.style.left = "50%";
-  boton.style.top = "50%";
-  boton.style.transform = "translate(-50%, -50%)";
-}
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      boton.style.transition = "left 0.2s ease, top 0.2s ease";
+      detectarColision();
+    }
+  });
 
-window.onload = () => {
+  // Iniciar
+  nuevaPalabra();
   colocarTitulos();
-  actualizarPalabra();
-};
 
-boton.addEventListener('mousedown', e => {
-  isDragging = true;
-  offsetX = e.clientX - boton.offsetLeft;
-  offsetY = e.clientY - boton.offsetTop;
-  boton.style.transition = "none";
-});
-
-document.addEventListener('mousemove', e => {
-  if (isDragging) {
-    boton.style.left = `${e.clientX - offsetX}px`;
-    boton.style.top = `${e.clientY - offsetY}px`;
-  }
-});
-
-document.addEventListener('mouseup', () => {
-  if (isDragging) {
-    isDragging = false;
-    detectarColision();
-  }
-});
-
-window.addEventListener('resize', colocarTitulos);
 </script>
 </body>
 </html>
