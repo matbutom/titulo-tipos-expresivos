@@ -19,7 +19,6 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* Encabezado superior izquierdo */
     .encabezado {
       position: absolute;
       top: 30px;
@@ -32,29 +31,32 @@
       font-size: 20px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      color: #4f46e5;  /* Azul como el botón */
+      color: #4f46e5;
     }
 
     .encabezado p {
       margin: 8px 0 0;
       font-size: 14px;
-      color: rgba(79, 70, 229, 0.7);  /* Azul con opacidad */
+      color: rgba(79, 70, 229, 0.7);
       max-width: 300px;
     }
 
-    /* Títulos de las tipografías alrededor del botón */
     .titulo {
       position: absolute;
       font-size: 24px;
-      font-family: Arial, Helvetica, sans-serif;
       color: #333;
       background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
       border-radius: 8px;
       pointer-events: none;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    /* Botón central interactivo */
+    .titulo.highlight {
+      transform: scale(1.2);
+      background: rgba(79, 70, 229, 0.2);
+    }
+
     #boton {
       position: absolute;
       left: 50%;
@@ -78,20 +80,18 @@
 </head>
 <body>
 
-<!-- Encabezado superior izquierdo -->
 <div class="encabezado">
   <h1>¿DÓNDE VA CADA PALABRA?</h1>
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<!-- Botón interactivo -->
 <button id="boton">¡Muéveme!</button>
 
 <script>
   const boton = document.getElementById('boton');
   const radius = 300;
+  let titulos = [];
 
-  // Definir las tipografías y sus posiciones alrededor del botón
   const tipografias = [
     { name: "Space Mono", font: "Space Mono" },
     { name: "Playfair Display", font: "Playfair Display" },
@@ -108,7 +108,6 @@
     const centerX = botonRect.left + botonRect.width / 2;
     const centerY = botonRect.top + botonRect.height / 2;
 
-    // Crear los títulos con las tipografías correspondientes
     tipografias.forEach((tipografia, i) => {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
@@ -121,6 +120,7 @@
       title.style.fontFamily = tipografia.font;
       title.innerText = tipografia.name;
       document.body.appendChild(title);
+      titulos.push(title);
     });
   }
 
@@ -128,7 +128,6 @@
 
   let offsetX = 0, offsetY = 0, isDragging = false;
 
-  // Evento para mover el botón central
   boton.addEventListener('mousedown', (e) => {
     isDragging = true;
     offsetX = e.clientX - boton.offsetLeft;
@@ -138,20 +137,42 @@
 
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-      boton.style.left = (e.clientX - offsetX) + 'px';
-      boton.style.top = (e.clientY - offsetY) + 'px';
+      const newX = e.clientX - offsetX;
+      const newY = e.clientY - offsetY;
+      boton.style.left = newX + 'px';
+      boton.style.top = newY + 'px';
+
+      // Detectar cercanía a tipografías
+      titulos.forEach(titulo => {
+        const tituloRect = titulo.getBoundingClientRect();
+        const botonRect = boton.getBoundingClientRect();
+
+        const tituloX = tituloRect.left + tituloRect.width / 2;
+        const tituloY = tituloRect.top + tituloRect.height / 2;
+        const botonX = botonRect.left + botonRect.width / 2;
+        const botonY = botonRect.top + botonRect.height / 2;
+
+        const distancia = Math.hypot(tituloX - botonX, tituloY - botonY);
+
+        if (distancia < 80) {
+          titulo.classList.add('highlight');
+        } else {
+          titulo.classList.remove('highlight');
+        }
+      });
     }
   });
 
   document.addEventListener('mouseup', () => {
     if (isDragging) {
       isDragging = false;
-      boton.style.transition = "left 0.2s ease, top 0.2s ease";
-
-      // Cuando se suelta el botón, lo volvemos a centrar
+      boton.style.transition = "left 0.3s ease, top 0.3s ease";
       boton.style.left = '50%';
       boton.style.top = '50%';
       boton.style.transform = 'translate(-50%, -50%)';
+
+      // Limpiar animaciones
+      titulos.forEach(titulo => titulo.classList.remove('highlight'));
     }
   });
 </script>
