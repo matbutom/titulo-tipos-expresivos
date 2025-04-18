@@ -52,7 +52,6 @@
       padding: 6px 12px;
       border-radius: 8px;
       pointer-events: none;
-      transition: transform 0.3s ease;
     }
 
     /* Botón central interactivo */
@@ -68,15 +67,13 @@
       border: none;
       border-radius: 12px;
       cursor: grab;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      transition: box-shadow 0.2s ease;
     }
 
     #boton:active {
       cursor: grabbing;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-      transform: translate(-50%, -50%) scale(1.05); /* Animación cuando se arrastra */
     }
-
   </style>
 </head>
 <body>
@@ -88,38 +85,31 @@
 </div>
 
 <!-- Botón interactivo -->
-<button id="boton">Haz clic aqui</button>
-
-<!-- Aquí van los títulos, que no deben moverse con el botón -->
-<div id="titulos-container"></div>
+<button id="boton">¡Muéveme!</button>
 
 <script>
   const boton = document.getElementById('boton');
   const radius = 300;
 
-  // URL del Google Apps Script
-  const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbxJo_f91aJSwHnNOcX1ZYVC4bo3A2czOwpQz6iPz-z1MEPzH63qhU65NRMLfuep1jQtHw/exec';
+  // Definir las tipografías y sus posiciones alrededor del botón
+  const tipografias = [
+    { name: "Space Mono", font: "Space Mono" },
+    { name: "Playfair Display", font: "Playfair Display" },
+    { name: "Merryweather", font: "Merryweather" },
+    { name: "DM Sans", font: "DM Sans" },
+    { name: "Titillium Web", font: "Titillium Web" },
+    { name: "Outfit", font: "Outfit" },
+    { name: "Jost", font: "Jost" },
+    { name: "Libre Baskerville", font: "Libre Baskerville" }
+  ];
 
   function colocarTitulos() {
     const botonRect = boton.getBoundingClientRect();
     const centerX = botonRect.left + botonRect.width / 2;
     const centerY = botonRect.top + botonRect.height / 2;
 
-    const existingTitles = document.querySelectorAll('.titulo');
-    existingTitles.forEach(title => title.remove());
-
-    const titulos = [
-      "Space Mono", 
-      "Playfair Display", 
-      "Merryweather", 
-      "DM Sans", 
-      "Titillium Web", 
-      "Outfit", 
-      "Jost", 
-      "Libre Baskerville"
-    ];
-
-    for (let i = 0; i < 8; i++) {
+    // Crear los títulos con las tipografías correspondientes
+    tipografias.forEach((tipografia, i) => {
       const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
@@ -128,17 +118,17 @@
       title.className = 'titulo';
       title.style.left = `${x - 85}px`;
       title.style.top = `${y - 20}px`;
-      title.innerText = titulos[i];
-      title.dataset.font = titulos[i];  // Almacenamos la tipografía en el data-font
-
-      document.getElementById('titulos-container').appendChild(title); // Cambié el contenedor de los títulos a un div específico
-    }
+      title.style.fontFamily = tipografia.font;
+      title.innerText = tipografia.name;
+      document.body.appendChild(title);
+    });
   }
 
   window.onload = colocarTitulos;
 
   let offsetX = 0, offsetY = 0, isDragging = false;
 
+  // Evento para mover el botón central
   boton.addEventListener('mousedown', (e) => {
     isDragging = true;
     offsetX = e.clientX - boton.offsetLeft;
@@ -150,7 +140,6 @@
     if (isDragging) {
       boton.style.left = (e.clientX - offsetX) + 'px';
       boton.style.top = (e.clientY - offsetY) + 'px';
-      colocarTitulos();
     }
   });
 
@@ -158,27 +147,13 @@
     if (isDragging) {
       isDragging = false;
       boton.style.transition = "left 0.2s ease, top 0.2s ease";
-      // Enviar la palabra y la tipografía a Google Sheets cuando el botón se ha soltado
-      enviarDatos(boton.innerText, boton.dataset.font);
-      // Regresar el botón al centro
+
+      // Cuando se suelta el botón, lo volvemos a centrar
       boton.style.left = '50%';
       boton.style.top = '50%';
-      colocarTitulos();  // Reposicionar los títulos después del movimiento
+      boton.style.transform = 'translate(-50%, -50%)';
     }
   });
-
-  function enviarDatos(palabra, tipografia) {
-    // Enviar la información al Google Sheets usando el Google Apps Script
-    const params = new URLSearchParams();
-    params.append('palabra', palabra);
-    params.append('tipografia', tipografia);
-    params.append('fecha', new Date().toLocaleString());
-
-    fetch(googleScriptUrl + '?' + params.toString())
-      .then(response => response.json())
-      .then(data => console.log("Datos enviados:", data))
-      .catch(error => console.error("Error al enviar los datos:", error));
-  }
 </script>
 
 </body>
