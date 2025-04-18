@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>¿DÓNDE VA CADA PALABRA?</title>
+  <title>Divisiones con Títulos Alrededor del Botón</title>
   <style>
     body {
       margin: 0;
@@ -19,6 +19,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
+    /* Encabezado superior izquierdo */
     .encabezado {
       position: absolute;
       top: 30px;
@@ -31,28 +32,30 @@
       font-size: 20px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      color: #4f46e5;
+      color: #4f46e5;  /* Azul como el botón */
     }
 
     .encabezado p {
       margin: 8px 0 0;
       font-size: 14px;
-      color: rgba(79, 70, 229, 0.7);
+      color: rgba(79, 70, 229, 0.7);  /* Azul con opacidad */
       max-width: 300px;
     }
 
+    /* Títulos de las tipografías alrededor del botón */
     .titulo {
       position: absolute;
       font-size: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #333;
+      background: rgba(255, 255, 255, 0.7);
       padding: 6px 12px;
       border-radius: 8px;
       pointer-events: none;
-      background: rgba(255, 255, 255, 0.7);
-      color: #333;
-      transform: translate(-50%, -50%);
-      transition: transform 0.3s ease, background 0.3s ease;
+      transition: transform 0.3s ease;
     }
 
+    /* Botón central interactivo */
     #boton {
       position: absolute;
       left: 50%;
@@ -71,134 +74,67 @@
     #boton:active {
       cursor: grabbing;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-      transform: scale(1.1);
+      transform: translate(-50%, -50%) scale(1.05); /* Animación cuando se arrastra */
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono&family=Playfair+Display&family=Merriweather&family=DM+Sans&family=Titillium+Web&family=Outfit&family=Jost&family=Libre+Baskerville&display=swap');
-
-    .SpaceMono { font-family: 'Space Mono', monospace; }
-    .PlayfairDisplay { font-family: 'Playfair Display', serif; }
-    .Merriweather { font-family: 'Merriweather', serif; }
-    .DMSans { font-family: 'DM Sans', sans-serif; }
-    .TitilliumWeb { font-family: 'Titillium Web', sans-serif; }
-    .Outfit { font-family: 'Outfit', sans-serif; }
-    .Jost { font-family: 'Jost', sans-serif; }
-    .LibreBaskerville { font-family: 'Libre Baskerville', serif; }
-
-    .notificacion {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #4f46e5;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      opacity: 0;
-      transform: translateY(-20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-
-    .notificacion.mostrar {
-      opacity: 1;
-      transform: translateY(0);
-    }
   </style>
 </head>
 <body>
 
+<!-- Encabezado superior izquierdo -->
 <div class="encabezado">
   <h1>¿DÓNDE VA CADA PALABRA?</h1>
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<button id="boton">Haz Click</button>
-<div id="notificacion" class="notificacion">Guardado</div>
+<!-- Botón interactivo -->
+<button id="boton">Haz clic y cambia</button>
 
 <script>
-  const palabras = [
-    "Administración", "Funcionario", "Autoridad", "Representante",
-    "Institución", "Empleo", "Ciudadanía", "Derechos Humanos",
-    "Equidad", "Diversidad", "Orden Público", "Delito",
-    "Sostenibilidad", "Cambio Climático", "Tecnología"
-  ];
-
-  const tipografias = [
-    { nombre: "Space Mono", clase: "SpaceMono" },
-    { nombre: "Playfair Display", clase: "PlayfairDisplay" },
-    { nombre: "Merriweather", clase: "Merriweather" },
-    { nombre: "DM Sans", clase: "DMSans" },
-    { nombre: "Titillium Web", clase: "TitilliumWeb" },
-    { nombre: "Outfit", clase: "Outfit" },
-    { nombre: "Jost", clase: "Jost" },
-    { nombre: "Libre Baskerville", clase: "LibreBaskerville" }
-  ];
-
   const boton = document.getElementById('boton');
-  const notificacion = document.getElementById('notificacion');
   const radius = 300;
-  let currentWordIndex = 0;
-  let isDragging = false, offsetX = 0, offsetY = 0;
+
+  // URL del Google Apps Script
+  const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbxJo_f91aJSwHnNOcX1ZYVC4bo3A2czOwpQz6iPz-z1MEPzH63qhU65NRMLfuep1jQtHw/exec';
 
   function colocarTitulos() {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const botonRect = boton.getBoundingClientRect();
+    const centerX = botonRect.left + botonRect.width / 2;
+    const centerY = botonRect.top + botonRect.height / 2;
 
-    document.querySelectorAll('.titulo').forEach(e => e.remove());
+    const existingTitles = document.querySelectorAll('.titulo');
+    existingTitles.forEach(title => title.remove());
 
-    tipografias.forEach((font, i) => {
-      const angle = (i * 45 + 22.5) * Math.PI / 180;
+    const titulos = [
+      "Space Mono", 
+      "Playfair Display", 
+      "Merryweather", 
+      "DM Sans", 
+      "Titillium Web", 
+      "Outfit", 
+      "Jost", 
+      "Libre Baskerville"
+    ];
+
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * 45 + 22.5) * (Math.PI / 180);
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 
       const title = document.createElement('div');
-      title.className = `titulo ${font.clase}`;
-      title.style.left = `${x}px`;
-      title.style.top = `${y}px`;
-      title.innerText = font.nombre;
+      title.className = 'titulo';
+      title.style.left = `${x - 85}px`;
+      title.style.top = `${y - 20}px`;
+      title.innerText = titulos[i];
+      title.dataset.font = titulos[i];  // Almacenamos la tipografía en el data-font
+
       document.body.appendChild(title);
-    });
+    }
   }
 
-  function cambiarPalabra() {
-    currentWordIndex = Math.floor(Math.random() * palabras.length);
-    boton.innerText = palabras[currentWordIndex];
-  }
+  window.onload = colocarTitulos;
 
-  function mostrarNotificacion(texto) {
-    notificacion.textContent = texto;
-    notificacion.classList.add('mostrar');
-    setTimeout(() => {
-      notificacion.classList.remove('mostrar');
-    }, 1500);
-  }
-
-  function guardarSeleccion(tipografia) {
-    const palabra = palabras[currentWordIndex];
-    const usuario = "MatiasB";
-
-    fetch('https://script.google.com/macros/s/AKfycbxJo_f91aJSwHnNOcX1ZYVC4bo3A2czOwpQz6iPz-z1MEPzH63qhU65NRMLfuep1jQtHw/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ palabra, tipografia, usuario })
-    })
-    .then(response => response.json())
-    .then(data => {
-      mostrarNotificacion("✅ Guardado en Google Sheets");
-      resetBoton();
-      cambiarPalabra();
-    })
-    .catch(err => {
-      console.error("❌ Error al guardar:", err);
-      mostrarNotificacion("⚠️ Error al enviar");
-      resetBoton();
-    });
-  }
-
-  function resetBoton() {
-    boton.style.left = "50%";
-    boton.style.top = "50%";
-    boton.style.transition = "left 0.3s ease, top 0.3s ease";
-  }
+  let offsetX = 0, offsetY = 0, isDragging = false;
 
   boton.addEventListener('mousedown', (e) => {
     isDragging = true;
@@ -209,37 +145,37 @@
 
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-      boton.style.left = `${e.clientX - offsetX}px`;
-      boton.style.top = `${e.clientY - offsetY}px`;
+      boton.style.left = (e.clientX - offsetX) + 'px';
+      boton.style.top = (e.clientY - offsetY) + 'px';
+      colocarTitulos();
     }
   });
 
   document.addEventListener('mouseup', () => {
-    if (!isDragging) return;
-    isDragging = false;
-    boton.style.transition = "left 0.3s ease, top 0.3s ease";
-
-    const bRect = boton.getBoundingClientRect();
-    document.querySelectorAll('.titulo').forEach(title => {
-      const tRect = title.getBoundingClientRect();
-      const distancia = Math.hypot(
-        bRect.left + bRect.width / 2 - (tRect.left + tRect.width / 2),
-        bRect.top + bRect.height / 2 - (tRect.top + tRect.height / 2)
-      );
-
-      if (distancia < 100) {
-        guardarSeleccion(title.innerText);
-      }
-    });
+    if (isDragging) {
+      isDragging = false;
+      boton.style.transition = "left 0.2s ease, top 0.2s ease";
+      // Enviar la palabra y la tipografía a Google Sheets cuando el botón se ha soltado
+      enviarDatos(boton.innerText, boton.dataset.font);
+      // Regresar el botón al centro
+      boton.style.left = '50%';
+      boton.style.top = '50%';
+      colocarTitulos();  // Reposicionar los títulos después del movimiento
+    }
   });
 
-  boton.addEventListener('click', cambiarPalabra);
-  window.onload = () => {
-    colocarTitulos();
-    cambiarPalabra();
-  };
+  function enviarDatos(palabra, tipografia) {
+    // Enviar la información al Google Sheets usando el Google Apps Script
+    const params = new URLSearchParams();
+    params.append('palabra', palabra);
+    params.append('tipografia', tipografia);
+    params.append('fecha', new Date().toLocaleString());
 
-  window.onresize = colocarTitulos;
+    fetch(googleScriptUrl + '?' + params.toString())
+      .then(response => response.json())
+      .then(data => console.log("Datos enviados:", data))
+      .catch(error => console.error("Error al enviar los datos:", error));
+  }
 </script>
 
 </body>
