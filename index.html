@@ -103,6 +103,7 @@
   ];
 
   let titles = [];
+  let dataRecopilada = [];
 
   // Función para colocar los títulos alrededor del botón
   function colocarTitulos() {
@@ -151,6 +152,30 @@
     if (isDragging) {
       isDragging = false;
       boton.style.transition = "left 0.2s ease, top 0.2s ease";
+      
+      // Verificamos si el botón está cerca de alguna tipografía
+      titles.forEach((title, index) => {
+        const titleRect = title.getBoundingClientRect();
+        const botonRect = boton.getBoundingClientRect();
+
+        // Comprobamos si el botón está lo suficientemente cerca de la tipografía
+        if (botonRect.left < titleRect.left + titleRect.width &&
+            botonRect.left + botonRect.width > titleRect.left &&
+            botonRect.top < titleRect.top + titleRect.height &&
+            botonRect.top + botonRect.height > titleRect.top) {
+          
+          // Guardamos los datos
+          dataRecopilada.push({
+            palabra: boton.innerText,
+            tipografia: tipografias[index]
+          });
+
+          console.log("Datos recopilados:", dataRecopilada);
+          
+          // Descargamos un archivo con los datos
+          generarArchivo();
+        }
+      });
     }
   });
 
@@ -159,6 +184,16 @@
     const palabraAleatoria = palabras[Math.floor(Math.random() * palabras.length)];
     boton.innerText = palabraAleatoria;
   });
+
+  // Función para generar un archivo de texto con los datos
+  function generarArchivo() {
+    const contenido = dataRecopilada.map(item => `Palabra: ${item.palabra}, Tipografía: ${item.tipografia}`).join('\n');
+    const blob = new Blob([contenido], { type: 'text/plain' });
+    const enlace = document.createElement('a');
+    enlace.href = URL.createObjectURL(blob);
+    enlace.download = 'datos_recopilados.txt';
+    enlace.click();
+  }
 </script>
 
 </body>
