@@ -90,6 +90,9 @@
 <!-- Botón interactivo -->
 <button id="boton">Haz clic y cambia</button>
 
+<!-- Aquí van los títulos, que no deben moverse con el botón -->
+<div id="titulos-container"></div>
+
 <script>
   const boton = document.getElementById('boton');
   const radius = 300;
@@ -128,7 +131,7 @@
       title.innerText = titulos[i];
       title.dataset.font = titulos[i];  // Almacenamos la tipografía en el data-font
 
-      document.body.appendChild(title);
+      document.getElementById('titulos-container').appendChild(title); // Cambié el contenedor de los títulos a un div específico
     }
   }
 
