@@ -37,6 +37,13 @@
       color: rgba(79, 70, 229, 0.7);
       max-width: 300px;
     }
+    .logo {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      height: 60px;
+      width: auto;
+    }
     .titulo {
       position: absolute;
       font-size: 24px;
@@ -91,6 +98,9 @@
   <h1>¿DÓNDE VA CADA PALABRA?</h1>
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
+
+<!-- Aquí se inserta tu logo -->
+<img class="logo" src="tipos_expresivos_logo.png" alt="Tipos Expresivos Logo">
 
 <button id="boton">Haz click</button>
 
@@ -247,10 +257,8 @@
     }
   });
 
-  // Iniciar
   nuevaPalabra();
   colocarTitulos();
-
 </script>
 </body>
 </html>
