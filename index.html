@@ -11,13 +11,14 @@
       width: 100vw;
       background-color: #f0f0f0;
       overflow: hidden;
-      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
       user-select: none;
       font-family: Arial, Helvetica, sans-serif;
+      position: relative;
     }
+
     .encabezado {
       position: absolute;
       top: 30px;
@@ -38,17 +39,16 @@
       max-width: 300px;
     }
 
-    /* Logo estilos */
+    /* Logo animado */
     .logo-animado {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 160px; 
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px;
       height: auto;
-      opacity: 0;
-      transform: scale(0.8);
+      opacity: 1;
       transition: transform 0.4s ease, opacity 0.4s ease;
-      animation: aparecerLogo 1s forwards;
       pointer-events: none;
     }
 
@@ -56,41 +56,42 @@
       animation: moverLogo 1s forwards;
     }
 
-    @keyframes aparecerLogo {
-      0% {
-        opacity: 0;
-        transform: scale(0.5) rotate(-10deg);
-      }
-      60% {
-        opacity: 1;
-        transform: scale(1.05) rotate(3deg);
-      }
-      100% {
-        transform: scale(1) rotate(0deg);
-      }
-    }
-
     @keyframes moverLogo {
       0% {
-        top: 20px;
-        right: 20px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
       100% {
         top: 10px;
-        right: 100px; /* Mueve el logo a la derecha */
+        left: 90%;
+        transform: translate(-90%, 0);
       }
     }
 
-    /* Tipografías */
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
+    /* Estilo del botón */
+    #boton {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translateX(-50%);
+      padding: 30px 60px;
+      font-size: 32px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: grab;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
 
+    #boton:active {
+      cursor: grabbing;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      transform: scale(1.05);
+    }
+
+    /* Tipografías */
     .font-SpaceMono { font-family: 'Space Mono', monospace; }
     .font-Playfair { font-family: 'Playfair Display', serif; }
     .font-Merriweather { font-family: 'Merriweather', serif; }
@@ -110,25 +111,15 @@
       transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
-    #boton {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      padding: 30px 60px;
-      font-size: 32px;
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: grab;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
-    }
-    #boton:active {
-      cursor: grabbing;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      transform: translate(-50%, -50%) scale(1.05);
-    }
+    /* Cargar fuentes */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
   </style>
 </head>
 <body>
@@ -141,7 +132,7 @@
 <!-- LOGO -->
 <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
 
-<button id="boton">Haz click</button>
+<button id="boton">Comienza el test</button>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
