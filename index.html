@@ -18,12 +18,14 @@
       user-select: none;
       font-family: Arial, Helvetica, sans-serif;
     }
+
     .encabezado {
       position: absolute;
       top: 30px;
       left: 30px;
       text-align: left;
     }
+
     .encabezado h1 {
       margin: 0;
       font-size: 20px;
@@ -31,6 +33,7 @@
       text-transform: uppercase;
       color: #4f46e5;
     }
+
     .encabezado p {
       margin: 8px 0 0;
       font-size: 14px;
@@ -43,27 +46,10 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 160px; 
+      width: 160px;
       height: auto;
-      opacity: 0;
-      transform: scale(0.8);
-      transition: transform 0.4s ease, opacity 0.4s ease;
-      animation: aparecerLogo 1s forwards;
+      opacity: 1; /* Logo estático sin animación */
       pointer-events: none;
-    }
-
-    @keyframes aparecerLogo {
-      0% {
-        opacity: 0;
-        transform: scale(0.5) rotate(-10deg);
-      }
-      60% {
-        opacity: 1;
-        transform: scale(1.05) rotate(3deg);
-      }
-      100% {
-        transform: scale(1) rotate(0deg);
-      }
     }
 
     /* Tipografías */
