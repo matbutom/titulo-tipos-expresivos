@@ -5,18 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>¿DÓNDE VA CADA PALABRA?</title>
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       margin: 0;
-      height: 100vh;
-      width: 100vw;
+      font-family: Arial, Helvetica, sans-serif;
       background-color: #eeeeee;
-      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Sección de inicio */
+    #inicio {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100vh;
+      padding-top: 140px;  /* distancia desde arriba */
+      background-color: #eeeeee;
+    }
+
+    .logo-grande {
+      width: 600px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .comenzar-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 17px;
+      background-color: #c7c7c7;
+      color: rgb(35, 35, 35);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .comenzar-btn:hover {
+      background-color: #8d8d8d;
+    }
+
+    /* Sección de juego */
+    #juego {
       position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      user-select: none;
-      font-family: Arial, Helvetica, sans-serif;
     }
 
     .encabezado {
@@ -41,14 +81,12 @@
       max-width: 300px;
     }
 
-    /* Logo estilos */
     .logo-animado {
       position: absolute;
       top: 20px;
       right: 20px;
       width: 160px;
       height: auto;
-      opacity: 1; /* Logo estático sin animación */
       pointer-events: none;
     }
 
@@ -104,17 +142,30 @@
 </head>
 <body>
 
-<div class="encabezado">
-  <h1>¿DÓNDE VA CADA PALABRA?</h1>
-  <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
-</div>
+<!-- Sección de inicio -->
+<section id="inicio">
+  <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-grande">
+  <button class="comenzar-btn" onclick="document.getElementById('juego').scrollIntoView({ behavior: 'smooth' });">
+    Comienza el Test
+  </button>
+</section>
 
-<!-- LOGO -->
-<img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
+<!-- Sección del juego -->
+<section id="juego">
+  <div class="encabezado">
+    <h1>¿DÓNDE VA CADA PALABRA?</h1>
+    <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
+  </div>
 
-<button id="boton">Haz click</button>
+  <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
 
-<!-- Firebase SDK -->
+  <!-- contenedor para los títulos -->
+  <div id="contenedorTitulos"></div>
+
+  <button id="boton">Haz click</button>
+</section>
+
+<!-- Firebase y lógica -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
@@ -160,21 +211,29 @@
   }
 
   function colocarTitulos() {
-    document.querySelectorAll('.titulo').forEach(t => t.remove());
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    tipografias.forEach((tipografia, i) => {
-      const angle = (i * 45 + 22.5) * Math.PI / 180;
-      const x = centerX + radius * Math.cos(angle);
-      const y = centerY + radius * Math.sin(angle);
-      const title = document.createElement('div');
-      title.className = `titulo ${tipografia.clase}`;
-      title.style.left = `${x - 85}px`;
-      title.style.top = `${y - 20}px`;
-      title.innerText = tipografia.nombre;
-      document.body.appendChild(title);
-    });
-  }
+  const contenedor = document.getElementById('contenedorTitulos');
+  contenedor.innerHTML = ''; // Limpiar antes de añadir
+
+  const juego = document.getElementById('juego');
+  const juegoRect = juego.getBoundingClientRect();
+  const centerX = juegoRect.width / 2;
+  const centerY = juegoRect.height / 2;
+
+  tipografias.forEach((tipografia, i) => {
+    const angle = (i * 45 + 22.5) * Math.PI / 180;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+
+    const title = document.createElement('div');
+    title.className = `titulo ${tipografia.clase}`;
+    title.style.position = 'absolute';
+    title.style.left = `${x - 85}px`;
+    title.style.top = `${y - 20}px`;
+    title.innerText = tipografia.nombre;
+
+    contenedor.appendChild(title);
+  });
+}
 
   function enviarAFirebase(palabra, tipografia) {
     db.collection("respuestas").add({
@@ -197,15 +256,9 @@
         const nuevoTotal = (actuales[tipografia] || 0) + 1;
         docRef.update({
           [`tipografias.${tipografia}`]: nuevoTotal
-        }).then(() => {
-          console.log(`Resumen actualizado: ${tipografia} => ${nuevoTotal}`);
         });
       } else {
-        docRef.set({
-          tipografias: { [tipografia]: 1 }
-        }).then(() => {
-          console.log(`Resumen creado para: ${palabra} con ${tipografia} = 1`);
-        });
+        docRef.set({ tipografias: { [tipografia]: 1 } });
       }
     });
   }
@@ -246,7 +299,6 @@
     boton.style.transform = 'translate(-50%, -50%)';
   }
 
-  // Detección de cercanía al logo
   document.addEventListener('mousemove', e => {
     const logoRect = logo.getBoundingClientRect();
     const distancia = Math.hypot(
@@ -254,11 +306,7 @@
       e.clientY - (logoRect.top + logoRect.height / 2)
     );
 
-    if (distancia < 150) { // a menos de 150px
-      logo.style.transform = 'scale(1.1) rotate(2deg)';
-    } else {
-      logo.style.transform = 'scale(1) rotate(0deg)';
-    }
+    logo.style.transform = distancia < 150 ? 'scale(1.1) rotate(2deg)' : 'scale(1) rotate(0deg)';
 
     if (isDragging) {
       boton.style.left = `${e.clientX - offsetX}px`;
@@ -281,7 +329,6 @@
     }
   });
 
-  // Iniciar
   nuevaPalabra();
   colocarTitulos();
 </script>
