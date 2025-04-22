@@ -18,8 +18,6 @@
       user-select: none;
       font-family: Arial, Helvetica, sans-serif;
     }
-
-    /* Título y bajada en la esquina superior izquierda */
     .encabezado {
       position: absolute;
       top: 30px;
@@ -40,33 +38,16 @@
       max-width: 300px;
     }
 
-    /* Pantalla de inicio */
-    .inicio {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 10;
-      transition: opacity 1s ease;
-    }
-
-    /* Logo en el centro con animación */
+    /* Logo estilos */
     .logo-animado {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
+      top: 20px;
+      right: 20px;
+      width: 160px; 
       height: auto;
       opacity: 0;
-      transform: scale(1);
-      transition: transform 1s ease, opacity 1s ease;
+      transform: scale(0.8);
+      transition: transform 0.4s ease, opacity 0.4s ease;
       animation: aparecerLogo 1s forwards;
       pointer-events: none;
     }
@@ -74,48 +55,15 @@
     @keyframes aparecerLogo {
       0% {
         opacity: 0;
-        transform: scale(1.5) rotate(-10deg) translate(-50%, -50%);
+        transform: scale(0.5) rotate(-10deg);
       }
       60% {
         opacity: 1;
-        transform: scale(1.1) rotate(3deg);
+        transform: scale(1.05) rotate(3deg);
       }
       100% {
         transform: scale(1) rotate(0deg);
       }
-    }
-
-    /* Estilo del botón "Comenzar el Test" */
-    #boton {
-      position: absolute;
-      left: 50%;
-      top: 60%;
-      transform: translate(-50%, -50%);
-      padding: 15px 30px;
-      font-size: 20px;
-      background-color: #d1d5db;
-      color: black;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
-    }
-
-    #boton:active {
-      cursor: grabbing;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      transform: translate(-50%, -50%) scale(1.05);
-    }
-
-    /* Tipografías en forma radial */
-    .titulo {
-      position: absolute;
-      font-size: 24px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 6px 12px;
-      border-radius: 8px;
-      pointer-events: none;
-      transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
     /* Tipografías */
@@ -136,94 +84,220 @@
     .font-Outfit { font-family: 'Outfit', sans-serif; }
     .font-Jost { font-family: 'Jost', sans-serif; }
     .font-LibreBaskerville { font-family: 'Libre Baskerville', serif; }
+
+    .titulo {
+      position: absolute;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 6px 12px;
+      border-radius: 8px;
+      pointer-events: none;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    #boton {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 30px 60px;
+      font-size: 32px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: grab;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    #boton:active {
+      cursor: grabbing;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      transform: translate(-50%, -50%) scale(1.05);
+    }
   </style>
 </head>
 <body>
 
-  <!-- Pantalla de inicio -->
-  <div class="inicio" id="pantallaInicio">
-    <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
-    <button id="boton">Comienza el Test</button>
-  </div>
+<div class="encabezado">
+  <h1>¿DÓNDE VA CADA PALABRA?</h1>
+  <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
+</div>
 
-  <!-- Título y bajada en la esquina superior izquierda -->
-  <div class="encabezado">
-    <h1>¿DÓNDE VA CADA PALABRA?</h1>
-    <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
-  </div>
+<!-- LOGO -->
+<img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+<button id="boton">Haz click</button>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8xKvj_y33Pz7u_RRGCqRSccenQxXUNDQ",
-      authDomain: "tipos-interactivos.firebaseapp.com",
-      projectId: "tipos-interactivos",
-      storageBucket: "tipos-interactivos.firebasestorage.app",
-      messagingSenderId: "936693486771",
-      appId: "1:936693486771:web:c243189625f7d18cd90cc6",
-      measurementId: "G-ZXBZTMRWNJ"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    const palabras = [
-      "Administración", "Funcionario", "Autoridad", "Representante", "Institución",
-      "Empleo", "Ciudadanía", "Derechos Humanos", "Equidad", "Diversidad",
-      "Orden Público", "Delito", "Sostenibilidad", "Cambio Climático", "Tecnología"
-    ];
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8xKvj_y33Pz7u_RRGCqRSccenQxXUNDQ",
+    authDomain: "tipos-interactivos.firebaseapp.com",
+    projectId: "tipos-interactivos",
+    storageBucket: "tipos-interactivos.firebasestorage.app",
+    messagingSenderId: "936693486771",
+    appId: "1:936693486771:web:c243189625f7d18cd90cc6",
+    measurementId: "G-ZXBZTMRWNJ"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    const tipografias = [
-      { nombre: "Space Mono", clase: "font-SpaceMono" },
-      { nombre: "Playfair Display", clase: "font-Playfair" },
-      { nombre: "Merriweather", clase: "font-Merriweather" },
-      { nombre: "DM Sans", clase: "font-DMSans" },
-      { nombre: "Titillium Web", clase: "font-Titillium" },
-      { nombre: "Outfit", clase: "font-Outfit" },
-      { nombre: "Jost", clase: "font-Jost" },
-      { nombre: "Libre Baskerville", clase: "font-LibreBaskerville" }
-    ];
+  const palabras = [
+    "Administración", "Funcionario", "Autoridad", "Representante", "Institución",
+    "Empleo", "Ciudadanía", "Derechos Humanos", "Equidad", "Diversidad",
+    "Orden Público", "Delito", "Sostenibilidad", "Cambio Climático", "Tecnología"
+  ];
 
-    let index = 0;
-    const boton = document.getElementById('boton');
-    const logo = document.getElementById('logoExpresivo');
-    const radius = 300;
-    let offsetX = 0, offsetY = 0, isDragging = false;
+  const tipografias = [
+    { nombre: "Space Mono", clase: "font-SpaceMono" },
+    { nombre: "Playfair Display", clase: "font-Playfair" },
+    { nombre: "Merriweather", clase: "font-Merriweather" },
+    { nombre: "DM Sans", clase: "font-DMSans" },
+    { nombre: "Titillium Web", clase: "font-Titillium" },
+    { nombre: "Outfit", clase: "font-Outfit" },
+    { nombre: "Jost", clase: "font-Jost" },
+    { nombre: "Libre Baskerville", clase: "font-LibreBaskerville" }
+  ];
 
-    function nuevaPalabra() {
-      boton.innerText = palabras[index % palabras.length];
-      index++;
+  let index = 0;
+  const boton = document.getElementById('boton');
+  const logo = document.getElementById('logoExpresivo');
+  const radius = 300;
+  let offsetX = 0, offsetY = 0, isDragging = false;
+
+  function nuevaPalabra() {
+    boton.innerText = palabras[index % palabras.length];
+    index++;
+  }
+
+  function colocarTitulos() {
+    document.querySelectorAll('.titulo').forEach(t => t.remove());
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    tipografias.forEach((tipografia, i) => {
+      const angle = (i * 45 + 22.5) * Math.PI / 180;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+      const title = document.createElement('div');
+      title.className = `titulo ${tipografia.clase}`;
+      title.style.left = `${x - 85}px`;
+      title.style.top = `${y - 20}px`;
+      title.innerText = tipografia.nombre;
+      document.body.appendChild(title);
+    });
+  }
+
+  function enviarAFirebase(palabra, tipografia) {
+    db.collection("respuestas").add({
+      palabra: palabra,
+      tipografia: tipografia,
+      fecha: new Date()
+    }).then(docRef => {
+      console.log("✔️ Enviado a Firestore con ID:", docRef.id);
+    }).catch(error => {
+      console.error("❌ Error al guardar:", error);
+    });
+  }
+
+  function actualizarResumenEnFirestore(palabra, tipografia) {
+    const docRef = db.collection("resumenRespuestas").doc(palabra);
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        const actuales = data.tipografias || {};
+        const nuevoTotal = (actuales[tipografia] || 0) + 1;
+        docRef.update({
+          [`tipografias.${tipografia}`]: nuevoTotal
+        }).then(() => {
+          console.log(`Resumen actualizado: ${tipografia} => ${nuevoTotal}`);
+        });
+      } else {
+        docRef.set({
+          tipografias: { [tipografia]: 1 }
+        }).then(() => {
+          console.log(`Resumen creado para: ${palabra} con ${tipografia} = 1`);
+        });
+      }
+    });
+  }
+
+  function detectarColision() {
+    const botonRect = boton.getBoundingClientRect();
+    document.querySelectorAll('.titulo').forEach(titulo => {
+      const tituloRect = titulo.getBoundingClientRect();
+      const dx = (botonRect.left + botonRect.width / 2) - (tituloRect.left + tituloRect.width / 2);
+      const dy = (botonRect.top + botonRect.height / 2) - (tituloRect.top + tituloRect.height / 2);
+      const distancia = Math.sqrt(dx * dx + dy * dy);
+
+      if (distancia < 100) {
+        titulo.style.transform = 'scale(1.2)';
+        titulo.style.backgroundColor = '#4f46e5';
+        titulo.style.color = '#fff';
+
+        const palabra = boton.innerText;
+        const tipografia = titulo.innerText;
+
+        enviarAFirebase(palabra, tipografia);
+        actualizarResumenEnFirestore(palabra, tipografia);
+
+        setTimeout(() => {
+          titulo.style.transform = '';
+          titulo.style.backgroundColor = '';
+          titulo.style.color = '';
+          resetBoton();
+          nuevaPalabra();
+        }, 500);
+      }
+    });
+  }
+
+  function resetBoton() {
+    boton.style.left = '50%';
+    boton.style.top = '50%';
+    boton.style.transform = 'translate(-50%, -50%)';
+  }
+
+  // Detección de cercanía al logo
+  document.addEventListener('mousemove', e => {
+    const logoRect = logo.getBoundingClientRect();
+    const distancia = Math.hypot(
+      e.clientX - (logoRect.left + logoRect.width / 2),
+      e.clientY - (logoRect.top + logoRect.height / 2)
+    );
+
+    if (distancia < 150) { // a menos de 150px
+      logo.style.transform = 'scale(1.1) rotate(2deg)';
+    } else {
+      logo.style.transform = 'scale(1) rotate(0deg)';
     }
 
-    function colocarTitulos() {
-      document.querySelectorAll('.titulo').forEach(t => t.remove());
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      tipografias.forEach((tipografia, i) => {
-        const angle = (i * 45 + 22.5) * Math.PI / 180;
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        const title = document.createElement('div');
-        title.className = `titulo ${tipografia.clase}`;
-        title.style.left = `${x - 85}px`;
-        title.style.top = `${y - 20}px`;
-        title.innerText = tipografia.nombre;
-        document.body.appendChild(title);
-      });
+    if (isDragging) {
+      boton.style.left = `${e.clientX - offsetX}px`;
+      boton.style.top = `${e.clientY - offsetY}px`;
     }
+  });
 
-    function iniciarTest() {
-      document.getElementById('pantallaInicio').style.opacity = 0;
-      setTimeout(() => {
-        document.getElementById('pantallaInicio').style.display = 'none';
-        nuevaPalabra();
-        colocarTitulos();
-      }, 1000);
+  boton.addEventListener('mousedown', e => {
+    isDragging = true;
+    offsetX = e.clientX - boton.offsetLeft;
+    offsetY = e.clientY - boton.offsetTop;
+    boton.style.transition = "none";
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      boton.style.transition = "left 0.2s ease, top 0.2s ease";
+      detectarColision();
     }
+  });
 
-    boton.addEventListener('click', iniciarTest);
-  </script>
+  // Iniciar
+  nuevaPalabra();
+  colocarTitulos();
+</script>
 </body>
 </html>
