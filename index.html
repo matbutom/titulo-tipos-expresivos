@@ -9,14 +9,14 @@
       margin: 0;
       height: 100vh;
       width: 100vw;
-      background-color: #f0f0f0;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      user-select: none;
+      background-color: white;
       font-family: Arial, Helvetica, sans-serif;
       position: relative;
+      overflow: hidden;
+      transition: background-color 1s ease;
     }
 
     .encabezado {
@@ -25,6 +25,7 @@
       left: 30px;
       text-align: left;
     }
+
     .encabezado h1 {
       margin: 0;
       font-size: 20px;
@@ -32,6 +33,7 @@
       text-transform: uppercase;
       color: #4f46e5;
     }
+
     .encabezado p {
       margin: 8px 0 0;
       font-size: 14px;
@@ -39,7 +41,7 @@
       max-width: 300px;
     }
 
-    /* Logo animado */
+    /* LOGO */
     .logo-animado {
       position: absolute;
       top: 50%;
@@ -48,32 +50,21 @@
       width: 160px;
       height: auto;
       opacity: 1;
-      transition: transform 0.4s ease, opacity 0.4s ease;
+      transition: transform 1s ease, opacity 1s ease;
       pointer-events: none;
     }
 
+    /* Movimiento del logo */
     .logo-movido {
-      animation: moverLogo 1s forwards;
+      transform: translate(-90%, 0);
+      opacity: 0;
     }
 
-    @keyframes moverLogo {
-      0% {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      100% {
-        top: 10px;
-        left: 90%;
-        transform: translate(-90%, 0);
-      }
-    }
-
-    /* Estilo del botón */
+    /* Botón */
     #boton {
       position: absolute;
       left: 50%;
-      top: 60%;
+      top: 70%;
       transform: translateX(-50%);
       padding: 30px 60px;
       font-size: 32px;
@@ -81,14 +72,29 @@
       color: white;
       border: none;
       border-radius: 12px;
-      cursor: grab;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    #boton:active {
-      cursor: grabbing;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      transform: scale(1.05);
+    #boton:hover {
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Fondo que cambia al presionar el botón */
+    .fondo-cambiado {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Test */
+    .test {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
     }
 
     /* Tipografías */
@@ -100,17 +106,7 @@
     .font-Outfit { font-family: 'Outfit', sans-serif; }
     .font-Jost { font-family: 'Jost', sans-serif; }
     .font-LibreBaskerville { font-family: 'Libre Baskerville', serif; }
-
-    .titulo {
-      position: absolute;
-      font-size: 24px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 6px 12px;
-      border-radius: 8px;
-      pointer-events: none;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
+    
     /* Cargar fuentes */
     @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
@@ -124,6 +120,7 @@
 </head>
 <body>
 
+<!-- Encabezado (opcional) -->
 <div class="encabezado">
   <h1>¿DÓNDE VA CADA PALABRA?</h1>
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
@@ -132,7 +129,14 @@
 <!-- LOGO -->
 <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
 
+<!-- Botón -->
 <button id="boton">Comienza el test</button>
+
+<!-- Test (oculto al principio) -->
+<div class="test" id="test">
+  <h2>¡Comienza el test!</h2>
+  <!-- Aquí va el contenido del test, por ejemplo, las palabras y las tipografías -->
+</div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
@@ -171,7 +175,9 @@
   let index = 0;
   const boton = document.getElementById('boton');
   const logo = document.getElementById('logoExpresivo');
-  
+  const testDiv = document.getElementById('test');
+  const body = document.body;
+
   function nuevaPalabra() {
     boton.innerText = palabras[index % palabras.length];
     index++;
@@ -195,47 +201,18 @@
     });
   }
 
-  function enviarAFirebase(palabra, tipografia) {
-    db.collection("respuestas").add({
-      palabra: palabra,
-      tipografia: tipografia,
-      fecha: new Date()
-    }).then(docRef => {
-      console.log("✔️ Enviado a Firestore con ID:", docRef.id);
-    }).catch(error => {
-      console.error("❌ Error al guardar:", error);
-    });
-  }
-
-  function actualizarResumenEnFirestore(palabra, tipografia) {
-    const docRef = db.collection("resumenRespuestas").doc(palabra);
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        const actuales = data.tipografias || {};
-        const nuevoTotal = (actuales[tipografia] || 0) + 1;
-        docRef.update({
-          [`tipografias.${tipografia}`]: nuevoTotal
-        }).then(() => {
-          console.log(`Resumen actualizado: ${tipografia} => ${nuevoTotal}`);
-        });
-      } else {
-        docRef.set({
-          tipografias: { [tipografia]: 1 }
-        }).then(() => {
-          console.log(`Resumen creado para: ${palabra} con ${tipografia} = 1`);
-        });
-      }
-    });
-  }
-
   // Evento de animación al hacer click en el botón
   boton.addEventListener('click', () => {
-    logo.classList.add('logo-movido');  // Añadimos la clase para mover el logo
+    // Cambiar fondo y ocultar el logo con animación
+    body.classList.add('fondo-cambiado');
+    logo.classList.add('logo-movido');
+    
+    // Mostrar el test después de la animación
     setTimeout(() => {
-      alert("¡El test comienza!");
+      testDiv.style.display = 'block';
       nuevaPalabra();
       colocarTitulos();
+      boton.style.display = 'none'; // Ocultar el botón después de hacer clic
     }, 1000); // Espera el tiempo de la animación
   });
 
