@@ -37,22 +37,36 @@
       color: rgba(79, 70, 229, 0.7);
       max-width: 300px;
     }
-    .logo {
+
+    /* Logo estilos */
+    .logo-animado {
       position: absolute;
       top: 20px;
-      right: 30px;
-      height: 60px;
-      width: auto;
-    }
-    .titulo {
-      position: absolute;
-      font-size: 24px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 6px 12px;
-      border-radius: 8px;
+      right: 20px;
+      width: 160px; 
+      height: auto;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      animation: aparecerLogo 1s forwards;
       pointer-events: none;
-      transition: transform 0.3s ease, background-color 0.3s ease;
     }
+
+    @keyframes aparecerLogo {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-10deg);
+      }
+      60% {
+        opacity: 1;
+        transform: scale(1.05) rotate(3deg);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    /* Tipografías */
     @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
@@ -70,6 +84,16 @@
     .font-Outfit { font-family: 'Outfit', sans-serif; }
     .font-Jost { font-family: 'Jost', sans-serif; }
     .font-LibreBaskerville { font-family: 'Libre Baskerville', serif; }
+
+    .titulo {
+      position: absolute;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 6px 12px;
+      border-radius: 8px;
+      pointer-events: none;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
 
     #boton {
       position: absolute;
@@ -99,8 +123,8 @@
   <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
 </div>
 
-<!-- Aquí se inserta tu logo -->
-<img class="logo" src="tipos_expresivos_logo.png" alt="Tipos Expresivos Logo">
+<!-- LOGO -->
+<img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
 
 <button id="boton">Haz click</button>
 
@@ -140,6 +164,7 @@
 
   let index = 0;
   const boton = document.getElementById('boton');
+  const logo = document.getElementById('logoExpresivo');
   const radius = 300;
   let offsetX = 0, offsetY = 0, isDragging = false;
 
@@ -235,18 +260,31 @@
     boton.style.transform = 'translate(-50%, -50%)';
   }
 
+  // Detección de cercanía al logo
+  document.addEventListener('mousemove', e => {
+    const logoRect = logo.getBoundingClientRect();
+    const distancia = Math.hypot(
+      e.clientX - (logoRect.left + logoRect.width / 2),
+      e.clientY - (logoRect.top + logoRect.height / 2)
+    );
+
+    if (distancia < 150) { // a menos de 150px
+      logo.style.transform = 'scale(1.1) rotate(2deg)';
+    } else {
+      logo.style.transform = 'scale(1) rotate(0deg)';
+    }
+
+    if (isDragging) {
+      boton.style.left = `${e.clientX - offsetX}px`;
+      boton.style.top = `${e.clientY - offsetY}px`;
+    }
+  });
+
   boton.addEventListener('mousedown', e => {
     isDragging = true;
     offsetX = e.clientX - boton.offsetLeft;
     offsetY = e.clientY - boton.offsetTop;
     boton.style.transition = "none";
-  });
-
-  document.addEventListener('mousemove', e => {
-    if (isDragging) {
-      boton.style.left = `${e.clientX - offsetX}px`;
-      boton.style.top = `${e.clientY - offsetY}px`;
-    }
   });
 
   document.addEventListener('mouseup', () => {
@@ -257,6 +295,7 @@
     }
   });
 
+  // Iniciar
   nuevaPalabra();
   colocarTitulos();
 </script>
