@@ -52,6 +52,10 @@
       pointer-events: none;
     }
 
+    .logo-movido {
+      animation: moverLogo 1s forwards;
+    }
+
     @keyframes aparecerLogo {
       0% {
         opacity: 0;
@@ -63,6 +67,17 @@
       }
       100% {
         transform: scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes moverLogo {
+      0% {
+        top: 20px;
+        right: 20px;
+      }
+      100% {
+        top: 10px;
+        right: 100px; /* Mueve el logo a la derecha */
       }
     }
 
@@ -165,9 +180,7 @@
   let index = 0;
   const boton = document.getElementById('boton');
   const logo = document.getElementById('logoExpresivo');
-  const radius = 300;
-  let offsetX = 0, offsetY = 0, isDragging = false;
-
+  
   function nuevaPalabra() {
     boton.innerText = palabras[index % palabras.length];
     index++;
@@ -177,6 +190,7 @@
     document.querySelectorAll('.titulo').forEach(t => t.remove());
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
+    const radius = 300;
     tipografias.forEach((tipografia, i) => {
       const angle = (i * 45 + 22.5) * Math.PI / 180;
       const x = centerX + radius * Math.cos(angle);
@@ -224,78 +238,16 @@
     });
   }
 
-  function detectarColision() {
-    const botonRect = boton.getBoundingClientRect();
-    document.querySelectorAll('.titulo').forEach(titulo => {
-      const tituloRect = titulo.getBoundingClientRect();
-      const dx = (botonRect.left + botonRect.width / 2) - (tituloRect.left + tituloRect.width / 2);
-      const dy = (botonRect.top + botonRect.height / 2) - (tituloRect.top + tituloRect.height / 2);
-      const distancia = Math.sqrt(dx * dx + dy * dy);
-
-      if (distancia < 100) {
-        titulo.style.transform = 'scale(1.2)';
-        titulo.style.backgroundColor = '#4f46e5';
-        titulo.style.color = '#fff';
-
-        const palabra = boton.innerText;
-        const tipografia = titulo.innerText;
-
-        enviarAFirebase(palabra, tipografia);
-        actualizarResumenEnFirestore(palabra, tipografia);
-
-        setTimeout(() => {
-          titulo.style.transform = '';
-          titulo.style.backgroundColor = '';
-          titulo.style.color = '';
-          resetBoton();
-          nuevaPalabra();
-        }, 500);
-      }
-    });
-  }
-
-  function resetBoton() {
-    boton.style.left = '50%';
-    boton.style.top = '50%';
-    boton.style.transform = 'translate(-50%, -50%)';
-  }
-
-  // Detección de cercanía al logo
-  document.addEventListener('mousemove', e => {
-    const logoRect = logo.getBoundingClientRect();
-    const distancia = Math.hypot(
-      e.clientX - (logoRect.left + logoRect.width / 2),
-      e.clientY - (logoRect.top + logoRect.height / 2)
-    );
-
-    if (distancia < 150) { // a menos de 150px
-      logo.style.transform = 'scale(1.1) rotate(2deg)';
-    } else {
-      logo.style.transform = 'scale(1) rotate(0deg)';
-    }
-
-    if (isDragging) {
-      boton.style.left = `${e.clientX - offsetX}px`;
-      boton.style.top = `${e.clientY - offsetY}px`;
-    }
+  // Evento de animación al hacer click en el botón
+  boton.addEventListener('click', () => {
+    logo.classList.add('logo-movido');  // Añadimos la clase para mover el logo
+    setTimeout(() => {
+      alert("¡El test comienza!");
+      nuevaPalabra();
+      colocarTitulos();
+    }, 1000); // Espera el tiempo de la animación
   });
 
-  boton.addEventListener('mousedown', e => {
-    isDragging = true;
-    offsetX = e.clientX - boton.offsetLeft;
-    offsetY = e.clientY - boton.offsetTop;
-    boton.style.transition = "none";
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (isDragging) {
-      isDragging = false;
-      boton.style.transition = "left 0.2s ease, top 0.2s ease";
-      detectarColision();
-    }
-  });
-
-  // Iniciar
   nuevaPalabra();
   colocarTitulos();
 </script>
