@@ -54,9 +54,8 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; /* Usaremos flexbox para la disposición general */
+      align-items: center; /* Centrar verticalmente los elementos */
     }
 
     .encabezado {
@@ -109,21 +108,32 @@
     .font-Jost { font-family: 'Jost', sans-serif; }
     .font-LibreBaskerville { font-family: 'Libre Baskerville', serif; }
 
+    #contenedorTitulos {
+      position: absolute; /* Posicionamiento absoluto dentro de #juego */
+      top: 50%; /* Centrar verticalmente el contenedor */
+      right: 5%; /* Margen desde la derecha */
+      transform: translateY(-50%); /* Ajuste fino del centrado vertical */
+      display: grid; /* Usaremos grid para las dos columnas */
+      grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual ancho */
+      gap: 20px; /* Espacio entre los bloques de tipografía */
+      width: auto; /* Ajustar el ancho al contenido */
+    }
+
     .titulo {
-      position: absolute;
-      font-size: 24px;
+      font-size: 20px; /* Ajustar el tamaño de la fuente si es necesario */
       background: rgba(255, 255, 255, 0.8);
-      padding: 6px 12px;
+      padding: 10px 15px; /* Ajustar el padding para el tamaño del bloque */
       border-radius: 8px;
       pointer-events: none;
       transition: transform 0.3s ease, background-color 0.3s ease;
+      text-align: center; /* Centrar el texto dentro del bloque */
     }
 
     #boton {
       position: absolute;
-      left: 50%;
+      left: 25%; /* Colocar el botón a la izquierda (ajusta según necesites) */
       top: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%); /* Centrar el botón */
       padding: 20px 40px;
       font-size: 28px;
       background-color: #c7c7c7;
@@ -142,43 +152,35 @@
 </head>
 <body>
 
-<!-- Sección de inicio -->
 <section id="inicio">
   <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-grande">
 </section>
 
-<!-- Sección explicativa -->
 <section id="explicacion" style="padding: 60px 20px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
   <div style="max-width: 1200px; width: 100%; display: flex; justify-content: space-between; align-items: flex-start;">
-    <!-- Texto explicativo alineado a la izquierda -->
     <div style="flex: 1; text-align: left;">
       <h2 style="font-size: 32px; color: #4f46e5">¿Cómo funciona el test?</h2>
       <p style="max-width: 600px; margin: 20px auto; font-size: 18px; color: #555;">
         Este test consiste en arrastrar palabras hacia las tipografías que creas que les corresponden. Al hacer clic en el botón, se inicia el test. Cuando termines de clasificar todas las palabras, tus respuestas serán enviadas de forma anónima para análisis. ¡Gracias por participar!
       </p>
     </div>
-    
-    <!-- Logo (placeholder del video/gif) alineado a la derecha -->
+
     <div style="flex: 1; display: flex; justify-content: flex-end;">
       <img src="tipos_expresivos_logo.png" alt="Explicación del Test" style="max-width: 500px; margin-top: 20px; border-radius: 12px;" />
     </div>
   </div>
 </section>
 
-<!-- Sección de datos -->
 <section id="datos" style="padding: 100px 40px; background-color: #eeeeee; display: flex; justify-content: center; align-items: center;">
-  <div style="max-width: 500px; width: 100%; text-align: left;">  
-    <h2 style="font-size: 32px; color: #4f46e5; margin-bottom: 30px; margin-top: 40px;">Ingresa tus datos</h2>
-    
-    <!-- Contenedor de los campos de texto -->
+  <div style="max-width: 500px; width: 100%; text-align: left;">
+    <h2 style="font-size: 32px; color: #4f46e5; margin-bottom: 30px; margin-top: 50px;">Ingresa tus datos</h2>
+
     <div style="width: 100%; display: flex; justify-content: space-between; gap: 40px;">
-      <!-- Campo de edad -->
       <div style="flex: 1;">
         <label for="edad" style="font-size: 18px; color: #333; display: block;">Edad</label>
         <input type="text" id="edad" name="edad" placeholder="Ingresa tu edad" style="width: 100%; padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 8px; margin-top: 8px;">
       </div>
-      
-      <!-- Campo de comuna -->
+
       <div style="flex: 1;">
         <label for="comuna" style="font-size: 18px; color: #333; display: block;">Comuna</label>
         <input type="text" id="comuna" name="comuna" placeholder="Ingresa tu comuna" style="width: 100%; padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 8px; margin-top: 8px;">
@@ -187,8 +189,7 @@
   </div>
 </section>
 
-<!-- Sección del juego -->
-<section id="juego" style="background-color:#f5f5f5; position: relative; width: 100vw; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+<section id="juego" style="background-color:#f5f5f5;">
   <div class="encabezado">
     <h1>¿DÓNDE VA CADA PALABRA?</h1>
     <p>Arrastra la palabra central a la tipografía que creas correspondiente</p>
@@ -196,14 +197,12 @@
 
   <img src="tipos_expresivos_logo.png" alt="Logo Tipos Expresivos" class="logo-animado" id="logoExpresivo">
 
-  <!-- contenedor para los títulos -->
   <div id="contenedorTitulos"></div>
 
   <button id="boton">Haz click</button>
 </section>
 
 
-<!-- Firebase y lógica -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
@@ -240,7 +239,6 @@
   let index = 0;
   const boton = document.getElementById('boton');
   const logo = document.getElementById('logoExpresivo');
-  const radius = 300;
   let offsetX = 0, offsetY = 0, isDragging = false;
 
   function nuevaPalabra() {
@@ -249,29 +247,16 @@
   }
 
   function colocarTitulos() {
-  const contenedor = document.getElementById('contenedorTitulos');
-  contenedor.innerHTML = ''; // Limpiar antes de añadir
+    const contenedor = document.getElementById('contenedorTitulos');
+    contenedor.innerHTML = ''; // Limpiar antes de añadir
 
-  const juego = document.getElementById('juego');
-  const juegoRect = juego.getBoundingClientRect();
-  const centerX = juegoRect.width / 2;
-  const centerY = juegoRect.height / 2;
-
-  tipografias.forEach((tipografia, i) => {
-    const angle = (i * 45 + 22.5) * Math.PI / 180;
-    const x = centerX + radius * Math.cos(angle);
-    const y = centerY + radius * Math.sin(angle);
-
-    const title = document.createElement('div');
-    title.className = `titulo ${tipografia.clase}`;
-    title.style.position = 'absolute';
-    title.style.left = `${x - 85}px`;
-    title.style.top = `${y - 20}px`;
-    title.innerText = tipografia.nombre;
-
-    contenedor.appendChild(title);
-  });
-}
+    tipografias.forEach(tipografia => {
+      const title = document.createElement('div');
+      title.className = `titulo ${tipografia.clase}`;
+      title.innerText = tipografia.nombre;
+      contenedor.appendChild(title);
+    });
+  }
 
   function enviarAFirebase(palabra, tipografia) {
     db.collection("respuestas").add({
@@ -309,7 +294,7 @@
       const dy = (botonRect.top + botonRect.height / 2) - (tituloRect.top + tituloRect.height / 2);
       const distancia = Math.sqrt(dx * dx + dy * dy);
 
-      if (distancia < 100) {
+      if (distancia < 70) { // Ajusta la distancia de colisión si es necesario
         titulo.style.transform = 'scale(1.2)';
         titulo.style.backgroundColor = '#4f46e5';
         titulo.style.color = '#fff';
@@ -332,7 +317,7 @@
   }
 
   function resetBoton() {
-    boton.style.left = '50%';
+    boton.style.left = '25%';
     boton.style.top = '50%';
     boton.style.transform = 'translate(-50%, -50%)';
   }
